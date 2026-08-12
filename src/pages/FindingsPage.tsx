@@ -36,7 +36,7 @@ const FindingsPage: React.FC = () => {
             placeholder="Search findings…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brass-500/40"
           />
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -46,7 +46,7 @@ const FindingsPage: React.FC = () => {
               onClick={() => setSeverityFilter(s)}
               className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors border
                 ${severityFilter === s
-                  ? 'bg-blue-600 text-white border-blue-600'
+                  ? 'bg-ink-800 text-white border-ink-800'
                   : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
                 }`}
             >

@@ -6,7 +6,7 @@ import { evidences } from '../data/evidenceData';
 import { Upload, Search, FileText, Award, BookOpen, ClipboardList, BarChart2 } from 'lucide-react';
 
 const typeIcons: Record<string, React.ReactNode> = {
-  Policy:      <BookOpen className="w-4 h-4 text-blue-500" />,
+  Policy:      <BookOpen className="w-4 h-4 text-ink-600" />,
   Procedure:   <ClipboardList className="w-4 h-4 text-purple-500" />,
   Record:      <FileText className="w-4 h-4 text-green-500" />,
   Report:      <BarChart2 className="w-4 h-4 text-amber-500" />,
@@ -44,7 +44,7 @@ const EvidencePage: React.FC = () => {
             placeholder="Search documents, tags…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brass-500/40"
           />
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -54,7 +54,7 @@ const EvidencePage: React.FC = () => {
               onClick={() => setTypeFilter(t)}
               className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors border
                 ${typeFilter === t
-                  ? 'bg-blue-600 text-white border-blue-600'
+                  ? 'bg-ink-800 text-white border-ink-800'
                   : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
                 }`}
             >
@@ -76,7 +76,7 @@ const EvidencePage: React.FC = () => {
               </div>
               <Badge label={e.type} />
             </div>
-            <h3 className="text-sm font-semibold text-slate-800 mb-1 leading-snug group-hover:text-blue-600 transition-colors">
+            <h3 className="text-sm font-semibold text-slate-800 mb-1 leading-snug group-hover:text-ink-700 transition-colors">
               {e.title}
             </h3>
             <p className="text-xs text-slate-400 mb-3">

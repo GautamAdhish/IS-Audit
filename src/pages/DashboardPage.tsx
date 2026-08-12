@@ -31,7 +31,7 @@ const DashboardPage: React.FC = () => (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
       <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
         <h3 className="text-sm font-semibold text-slate-800">Recent Audits</h3>
-        <a href="/audits" className="text-xs text-blue-600 hover:underline font-medium">View all</a>
+        <a href="/audits" className="text-xs text-ink-700 hover:underline font-medium">View all</a>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">

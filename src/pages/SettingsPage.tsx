@@ -29,7 +29,7 @@ const SettingsPage: React.FC = () => (
                 <input
                   type={field.type}
                   defaultValue={field.value}
-                  className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+                  className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brass-500/40 focus:bg-white transition"
                 />
               </div>
             ))}
@@ -53,7 +53,7 @@ const SettingsPage: React.FC = () => (
               <div key={pref.label} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
                 <span className="text-sm text-slate-700">{pref.label}</span>
                 <div
-                  className={`relative inline-flex h-5 w-9 rounded-full transition-colors cursor-pointer ${pref.enabled ? 'bg-blue-600' : 'bg-slate-200'}`}
+                  className={`relative inline-flex h-5 w-9 rounded-full transition-colors cursor-pointer ${pref.enabled ? 'bg-ink-800' : 'bg-slate-200'}`}
                 >
                   <span
                     className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${pref.enabled ? 'translate-x-4' : ''}`}
@@ -81,7 +81,7 @@ const SettingsPage: React.FC = () => (
                 <input
                   type="number"
                   defaultValue={field.value}
-                  className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+                  className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brass-500/40 focus:bg-white transition"
                 />
               </div>
             ))}

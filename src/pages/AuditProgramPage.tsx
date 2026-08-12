@@ -22,7 +22,7 @@ const AuditProgramPage: React.FC = () => {
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 mb-6">
         <div className="flex items-center justify-between mb-3">
           <p className="text-sm font-semibold text-slate-700">Annual Program Progress</p>
-          <span className="text-sm font-bold text-blue-600">{completedCount}/{audits.length} completed</span>
+          <span className="text-sm font-bold text-ink-700">{completedCount}/{audits.length} completed</span>
         </div>
         <ProgressBar value={progressPct} />
       </div>

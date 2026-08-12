@@ -17,8 +17,8 @@ const ReportsPage: React.FC = () => (
       {reports.map((r) => (
         <div key={r.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between mb-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-              <FileText className="w-5 h-5 text-blue-600" />
+            <div className="w-10 h-10 rounded-lg bg-ink-500/10 flex items-center justify-center">
+              <FileText className="w-5 h-5 text-ink-700" />
             </div>
             <Badge label={r.status} />
           </div>
@@ -32,7 +32,7 @@ const ReportsPage: React.FC = () => (
               <p className="text-xs font-semibold text-slate-700">{r.generatedBy}</p>
               <p className="text-[10px] text-slate-400">{r.generatedDate}</p>
             </div>
-            <button className="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+            <button className="p-2 rounded-lg text-slate-400 hover:text-ink-700 hover:bg-ink-500/10 transition-colors">
               <Download className="w-4 h-4" />
             </button>
           </div>

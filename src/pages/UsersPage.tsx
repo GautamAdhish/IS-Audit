@@ -29,7 +29,7 @@ const UsersPage: React.FC = () => {
           placeholder="Search users…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brass-500/40"
         />
       </div>
 
@@ -37,8 +37,8 @@ const UsersPage: React.FC = () => {
         {filtered.map((u) => (
           <div key={u.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                <User className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 rounded-full bg-ink-500/10 flex items-center justify-center shrink-0">
+                <User className="w-5 h-5 text-ink-700" />
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-slate-800 truncate">{u.name}</p>
