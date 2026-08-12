@@ -8,14 +8,20 @@ interface BadgeProps {
 }
 
 const variantClasses: Record<BadgeVariant, string> = {
-  green:  'bg-green-100 text-green-800',
-  red:    'bg-red-100 text-red-800',
-  amber:  'bg-amber-100 text-amber-800',
-  blue:   'bg-blue-100 text-blue-800',
-  purple: 'bg-purple-100 text-purple-800',
-  orange: 'bg-orange-100 text-orange-800',
-  indigo: 'bg-indigo-100 text-indigo-800',
-  gray:   'bg-gray-100 text-gray-700',
+  green:  'bg-green-50 text-green-800 ring-1 ring-inset ring-green-600/20',
+  red:    'bg-red-50 text-red-800 ring-1 ring-inset ring-red-600/20',
+  amber:  'bg-amber-50 text-amber-800 ring-1 ring-inset ring-amber-600/20',
+  blue:   'bg-ink-500/10 text-ink-700 ring-1 ring-inset ring-ink-500/20',
+  purple: 'bg-purple-50 text-purple-800 ring-1 ring-inset ring-purple-600/20',
+  orange: 'bg-orange-50 text-orange-800 ring-1 ring-inset ring-orange-600/20',
+  indigo: 'bg-indigo-50 text-indigo-800 ring-1 ring-inset ring-indigo-600/20',
+  gray:   'bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-400/20',
+};
+
+const dotClasses: Record<BadgeVariant, string> = {
+  green: 'bg-green-500', red: 'bg-red-500', amber: 'bg-amber-500',
+  blue: 'bg-ink-500', purple: 'bg-purple-500', orange: 'bg-orange-500',
+  indigo: 'bg-indigo-500', gray: 'bg-slate-400',
 };
 
 export function statusVariant(status: string): BadgeVariant {
@@ -68,7 +74,8 @@ export function statusVariant(status: string): BadgeVariant {
 const Badge: React.FC<BadgeProps> = ({ label, variant }) => {
   const v = variant ?? statusVariant(label);
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${variantClasses[v]}`}>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${variantClasses[v]}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${dotClasses[v]}`} />
       {label}
     </span>
   );

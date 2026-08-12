@@ -10,11 +10,18 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children?: React.ReactNode;
 }
 
+// Primary uses the ink/navy brand color instead of a stock blue, and gets a
+// slight press-down on click (translate + shadow drop) — the kind of tiny
+// tactile detail that's easy to skip when a whole UI gets generated in one pass.
 const variantClasses: Record<ButtonVariant, string> = {
-  primary:   'bg-blue-600 hover:bg-blue-700 text-white shadow-sm',
-  secondary: 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 shadow-sm',
-  danger:    'bg-red-600 hover:bg-red-700 text-white shadow-sm',
-  ghost:     'hover:bg-slate-100 text-slate-600',
+  primary:
+    'bg-ink-800 hover:bg-ink-900 text-white shadow-sm active:translate-y-px active:shadow-none',
+  secondary:
+    'bg-white hover:bg-slate-50 text-ink-800 border border-slate-300 shadow-sm active:translate-y-px',
+  danger:
+    'bg-red-700 hover:bg-red-800 text-white shadow-sm active:translate-y-px active:shadow-none',
+  ghost:
+    'hover:bg-slate-100 text-slate-600 active:translate-y-px',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -32,7 +39,7 @@ const Button: React.FC<ButtonProps> = ({
   ...rest
 }) => (
   <button
-    className={`inline-flex items-center gap-2 rounded-lg font-medium transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+    className={`inline-flex items-center gap-2 rounded-md font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-brass-500 focus-visible:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:translate-y-0 ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
     {...rest}
   >
     {icon && <span className="shrink-0">{icon}</span>}
