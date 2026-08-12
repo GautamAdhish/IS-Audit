@@ -22,7 +22,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => (
       <input
         type="text"
         placeholder="Search audits, findings…"
-        className="w-full pl-8 pr-3 py-1.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+        className="w-full pl-8 pr-3 py-1.5 text-sm bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-brass-500/40 focus:border-brass-500/60 focus:bg-white transition"
       />
     </div>
 
@@ -36,7 +36,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => (
 
     {/* Avatar */}
     <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-      <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white">
+      <div className="w-8 h-8 rounded-full bg-ink-800 flex items-center justify-center text-white">
         <User className="w-4 h-4" />
       </div>
       <div className="hidden sm:block">
