@@ -30,7 +30,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => (
   <aside
     className={`
       h-full bg-slate-900 flex flex-col transition-all duration-300
-      ${collapsed ? 'w-16' : 'w-60'}
+      w-[85vw] max-w-[18rem] lg:w-auto
+      ${collapsed ? 'lg:w-16' : 'lg:w-60'}
     `}
   >
     {/* Logo */}
