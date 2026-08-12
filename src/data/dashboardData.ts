@@ -1,16 +1,16 @@
 export const statCards = [
-  { label: 'Total Audits',          value: 48,   color: 'blue',   icon: 'ClipboardList' },
-  { label: 'In Progress',           value: 14,   color: 'amber',  icon: 'Loader' },
-  { label: 'Completed',             value: 26,   color: 'green',  icon: 'CheckCircle' },
-  { label: 'Overdue',               value: 8,    color: 'red',    icon: 'AlertCircle' },
-  { label: 'Total Nonconformities', value: 32,   color: 'purple', icon: 'AlertTriangle' },
-  { label: 'Major NCs',             value: 7,    color: 'red',    icon: 'XCircle' },
-  { label: 'Minor NCs',             value: 18,   color: 'amber',  icon: 'MinusCircle' },
-  { label: 'Observations',          value: 12,   color: 'blue',   icon: 'Eye' },
-  { label: 'CAPA Pending',          value: 15,   color: 'orange', icon: 'Clock' },
-  { label: 'Compliance',            value: '87%',color: 'green',  icon: 'TrendingUp' },
-  { label: 'High Risks',            value: 5,    color: 'red',    icon: 'ShieldAlert' },
-  { label: 'Documents',             value: 152,  color: 'indigo', icon: 'FileText' },
+  { label: 'Total Audits',          value: 48,    color: 'blue',   icon: 'ClipboardList' },
+  { label: 'In Progress',           value: 14,    color: 'amber',  icon: 'Loader' },
+  { label: 'Completed',             value: 26,    color: 'green',  icon: 'CheckCircle' },
+  { label: 'Overdue',               value: 8,     color: 'red',    icon: 'AlertCircle' },
+  { label: 'Total Nonconformities', value: 32,    color: 'purple', icon: 'AlertTriangle' },
+  { label: 'Major NCs',             value: 7,     color: 'red',    icon: 'XCircle' },
+  { label: 'Minor NCs',             value: 18,    color: 'amber',  icon: 'MinusCircle' },
+  { label: 'Observations',          value: 12,    color: 'blue',   icon: 'Eye' },
+  { label: 'CAPA Pending',          value: 15,    color: 'orange', icon: 'Clock' },
+  { label: 'Compliance',            value: '87%', color: 'green',  icon: 'TrendingUp' },
+  { label: 'High Risks',            value: 5,     color: 'red',    icon: 'ShieldAlert' },
+  { label: 'Documents',             value: 152,   color: 'indigo', icon: 'FileText' },
 ];
 
 export const complianceByDepartment = [
