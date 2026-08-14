@@ -7,8 +7,7 @@
   names the green accent scale; kept these token names so every
   component already referencing them repaints for free.
 */
-/* stylelint-disable unknownAtRules */
-@theme {
+:root {
   --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
 
@@ -26,7 +25,6 @@
   --color-brass-600: #3c8c2c;
   --color-brass-700: #2f6d23;
 }
-/* stylelint-enable unknownAtRules */
 
 @layer base {
   html {
