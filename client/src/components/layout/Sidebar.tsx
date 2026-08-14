@@ -1,9 +1,10 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard, BookOpen, ClipboardList, CheckSquare,
   AlertTriangle, Target, ShieldAlert, FolderOpen,
-  BarChart2, Users, Settings, Shield,
+  BarChart2, Users, Settings, User,
   ChevronLeft, ChevronRight,
 } from 'lucide-react';
 
@@ -26,7 +27,10 @@ interface SidebarProps {
   onToggle: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => (
+const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
+  const { user } = useAuth();
+
+  return (
   <aside
     className={`
       h-full bg-ink-950 flex flex-col transition-all duration-300
@@ -34,15 +38,15 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => (
       ${collapsed ? 'lg:w-16' : 'lg:w-60'}
     `}
   >
-    {/* Logo */}
-    <div className="flex items-center gap-3 px-4 py-4 border-b border-white/8 shrink-0">
-      <div className="w-8 h-8 rounded-md bg-brass-500 flex items-center justify-center shrink-0">
-        <Shield className="w-4 h-4 text-ink-950" />
+    {/* Profile header — circular green avatar like the reference dashboard */}
+    <div className={`flex flex-col items-center text-center px-4 pt-7 pb-6 border-b border-white/8 shrink-0 ${collapsed ? 'px-2 pt-4 pb-4' : ''}`}>
+      <div className={`rounded-full bg-brass-500 flex items-center justify-center shrink-0 ${collapsed ? 'w-9 h-9' : 'w-20 h-20'}`}>
+        <User className={collapsed ? 'w-4 h-4 text-white' : 'w-10 h-10 text-white'} />
       </div>
       {!collapsed && (
-        <div className="min-w-0">
-          <p className="text-xs font-semibold text-white leading-none truncate tracking-tight">IS Audit</p>
-          <p className="text-[10px] text-slate-400 leading-none mt-1 truncate uppercase tracking-wider">Management System</p>
+        <div className="min-w-0 mt-3">
+          <p className="text-sm font-bold text-white leading-tight truncate tracking-tight uppercase">{user?.name || 'IS Audit'}</p>
+          <p className="text-[10px] text-slate-400 leading-none mt-1.5 truncate uppercase tracking-wider">{user?.role || 'Management System'}</p>
         </div>
       )}
     </div>
@@ -57,7 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => (
           className={({ isActive }) =>
             `relative flex items-center gap-3 px-3 py-2.5 rounded-md text-[13px] font-medium transition-colors duration-150
             ${isActive
-              ? 'bg-white/8 text-white'
+              ? 'bg-white/8 text-brass-400'
               : 'text-slate-400 hover:bg-white/5 hover:text-white'
             }
             ${collapsed ? 'justify-center' : ''}`
@@ -87,6 +91,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => (
       </button>
     </div>
   </aside>
-);
+  );
+};
 
 export default Sidebar;

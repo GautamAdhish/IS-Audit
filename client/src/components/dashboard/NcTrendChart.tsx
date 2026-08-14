@@ -20,7 +20,7 @@ const NcTrendChart: React.FC<{data?: any[]}> = ({data = []}) => (
           <Legend wrapperStyle={{ fontSize: 11 }} />
           <Line type="monotone" dataKey="major"       stroke="#ef4444" strokeWidth={2} dot={{ r: 3 }} name="Major NC"      />
           <Line type="monotone" dataKey="minor"       stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} name="Minor NC"      />
-          <Line type="monotone" dataKey="observation" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} name="Observation"   />
+          <Line type="monotone" dataKey="observation" stroke="#383842" strokeWidth={2} dot={{ r: 3 }} name="Observation"   />
         </LineChart>
       </ResponsiveContainer>
     </CardBody>

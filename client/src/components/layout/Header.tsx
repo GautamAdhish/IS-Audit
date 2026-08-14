@@ -41,7 +41,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
 
     {/* Avatar */}
     <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-      <div className="w-8 h-8 rounded-full bg-ink-800 flex items-center justify-center text-white">
+      <div className="w-8 h-8 rounded-full bg-brass-500 flex items-center justify-center text-white">
         <User className="w-4 h-4" />
       </div>
       <div className="hidden sm:block">

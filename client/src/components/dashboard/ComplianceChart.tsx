@@ -6,7 +6,7 @@ import {
 import Card, { CardHeader, CardBody } from '../common/Card';
 
 const getBarColor = (value: number): string => {
-  if (value >= 85) return '#10b981';
+  if (value >= 85) return '#4caf37';
   if (value >= 70) return '#f59e0b';
   return '#ef4444';
 };

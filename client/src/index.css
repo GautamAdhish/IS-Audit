@@ -2,28 +2,31 @@
 @import "tailwindcss";
 
 /*
-  Brand palette — deep ink/navy + a brass accent instead of the
-  default Tailwind blue. Navy + brass reads like a compliance/audit
-  tool rather than a generic SaaS dashboard.
+  Brand palette — charcoal + a bright grass-green accent, matching the
+  dashboard reference. "ink" now names the charcoal scale and "brass"
+  names the green accent scale; kept these token names so every
+  component already referencing them repaints for free.
 */
+/* stylelint-disable unknownAtRules */
 @theme {
   --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
 
-  --color-ink-950: #0b1220;
-  --color-ink-900: #101a2e;
-  --color-ink-800: #16233d;
-  --color-ink-700: #1d2f4f;
-  --color-ink-600: #294070;
-  --color-ink-500: #3a5590;
+  --color-ink-950: #26262f;
+  --color-ink-900: #2e2e38;
+  --color-ink-800: #383842;
+  --color-ink-700: #45454f;
+  --color-ink-600: #575763;
+  --color-ink-500: #6d6d7a;
 
-  --color-brass-50:  #fbf6ec;
-  --color-brass-100: #f3e7c9;
-  --color-brass-400: #c99a3f;
-  --color-brass-500: #b5842c;
-  --color-brass-600: #966c22;
-  --color-brass-700: #77551b;
+  --color-brass-50:  #eefbea;
+  --color-brass-100: #d8f5cd;
+  --color-brass-400: #74c948;
+  --color-brass-500: #4caf37;
+  --color-brass-600: #3c8c2c;
+  --color-brass-700: #2f6d23;
 }
+/* stylelint-enable unknownAtRules */
 
 @layer base {
   html {
@@ -34,7 +37,7 @@
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
-    background: #f6f5f1;
+    background: #eff0f1;
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
