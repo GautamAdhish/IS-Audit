@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  base: '/IS-Audit/',
+  base: '/is-audit/',
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
