@@ -1,19 +1,19 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import DashboardLayout from './components/layout/DashboardLayout';
-import DashboardPage from './pages/DashboardPage';
-import AuditProgramPage from './pages/AuditProgramPage';
-import AuditsPage from './pages/AuditsPage';
-import ChecklistPage from './pages/ChecklistPage';
-import FindingsPage from './pages/FindingsPage';
-import CapaPage from './pages/CapaPage';
-import RisksPage from './pages/RisksPage';
-import EvidencePage from './pages/EvidencePage';
-import ReportsPage from './pages/ReportsPage';
-import UsersPage from './pages/UsersPage';
-import SettingsPage from './pages/SettingsPage';
-import LoginPage from './pages/LoginPage';
-import ProtectedRoute from './components/layout/ProtectedRoute';
-import { AuthProvider } from './context/AuthContext';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import DashboardLayout from "./components/layout/DashboardLayout";
+import DashboardPage from "./pages/DashboardPage";
+import AuditProgramPage from "./pages/AuditProgramPage";
+import AuditsPage from "./pages/AuditsPage";
+import ChecklistPage from "./pages/ChecklistPage";
+import FindingsPage from "./pages/FindingsPage";
+import CapaPage from "./pages/CapaPage";
+import RisksPage from "./pages/RisksPage";
+import EvidencePage from "./pages/EvidencePage";
+import ReportsPage from "./pages/ReportsPage";
+import UsersPage from "./pages/UsersPage";
+import SettingsPage from "./pages/SettingsPage";
+import LoginPage from "./pages/LoginPage";
+import ProtectedRoute from "./components/layout/ProtectedRoute";
+import { AuthProvider } from "./context/AuthContext";
 
 export default function App() {
   return (
