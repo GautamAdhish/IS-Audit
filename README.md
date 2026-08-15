@@ -1,5 +1,4 @@
-# IS-Audit — MERN Stack
-
+# IS-Audit 
 IS-Audit is an Information Security / ISO 27001 audit-management application built as a MERN stack:
 
 - **MongoDB** — persistent audit, findings, CAPA, risk, evidence, report, checklist, user and settings data
