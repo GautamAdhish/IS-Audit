@@ -7,7 +7,7 @@
   names the green accent scale; kept these token names so every
   component already referencing them repaints for free.
 */
-theme {
+@theme {
   --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
 
