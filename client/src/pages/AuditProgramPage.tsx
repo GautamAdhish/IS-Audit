@@ -1,3 +1,89 @@
-import React, {useEffect,useState} from 'react'; import PageHeader from '../components/common/PageHeader'; import Badge from '../components/common/Badge'; import ProgressBar from '../components/common/ProgressBar'; import {api} from '../lib/api';
-const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-export default function AuditProgramPage(){const [audits,setAudits]=useState<any[]>([]);useEffect(()=>{api.get('/audits?limit=100').then(r=>setAudits(r.data||[]))},[]);const depts=[...new Set(audits.map(a=>a.department))];const completed=audits.filter(a=>a.status==='Completed').length;return <div><PageHeader title="Audit Program" subtitle="Annual audit schedule and progress"/><div className="bg-white rounded-xl border p-5 mb-6"><div className="flex justify-between mb-3"><span className="text-sm font-semibold">Annual Program Progress</span><span className="text-sm font-bold">{completed}/{audits.length} completed</span></div><ProgressBar value={audits.length?Math.round(completed/audits.length*100):0}/></div><div className="bg-white rounded-xl border overflow-hidden"><div className="overflow-x-auto"><table className="w-full text-xs"><thead><tr className="bg-slate-50 border-b"><th className="px-4 py-3 text-left w-36">Department</th>{months.map(m=><th key={m} className="px-3 py-3 min-w-[64px]">{m}</th>)}</tr></thead><tbody className="divide-y">{depts.map(d=><tr key={d}><td className="px-4 py-3 font-semibold">{d}</td>{months.map((m,i)=><td key={m} className="px-2 py-2 text-center">{audits.filter(a=>a.department===d&&new Date(a.startDate).getMonth()===i).map(a=><div key={a._id}><Badge label={a.status}/></div>)}</td>)}</tr>)}</tbody></table></div></div></div>}
+import React, { useEffect, useState } from "react";
+import PageHeader from "../components/common/PageHeader";
+import Badge from "../components/common/Badge";
+import ProgressBar from "../components/common/ProgressBar";
+import { api } from "../lib/api";
+const months = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+export default function AuditProgramPage() {
+  const [audits, setAudits] = useState<any[]>([]);
+  useEffect(() => {
+    api.get("/audits?limit=100").then((r) => setAudits(r.data || []));
+  }, []);
+  const depts = [...new Set(audits.map((a) => a.department))];
+  const completed = audits.filter((a) => a.status === "Completed").length;
+  return (
+    <div>
+      <PageHeader
+        title="Audit Program"
+        subtitle="Annual audit schedule and progress"
+      />
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 mb-6">
+        <div className="flex justify-between mb-3">
+          <span className="text-sm font-semibold">Annual Program Progress</span>
+          <span className="text-sm font-bold">
+            {completed}/{audits.length} completed
+          </span>
+        </div>
+        <ProgressBar
+          value={
+            audits.length ? Math.round((completed / audits.length) * 100) : 0
+          }
+        />
+      </div>
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-xs text-slate-500 bg-slate-50 border-b border-slate-200">
+                <th className="px-4 py-3 font-medium w-36">Department</th>
+                {months.map((m) => (
+                  <th
+                    key={m}
+                    className="px-3 py-3 font-medium text-center min-w-[64px]"
+                  >
+                    {m}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {depts.map((d) => (
+                <tr key={d} className="hover:bg-slate-50">
+                  <td className="px-4 py-3 font-medium text-slate-600">{d}</td>
+                  {months.map((m, i) => (
+                    <td key={m} className="px-2 py-3 text-center">
+                      {audits
+                        .filter(
+                          (a) =>
+                            a.department === d &&
+                            new Date(a.startDate).getMonth() === i,
+                        )
+                        .map((a) => (
+                          <div key={a._id}>
+                            <Badge label={a.status} />
+                          </div>
+                        ))}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
