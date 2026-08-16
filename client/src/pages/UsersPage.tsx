@@ -10,7 +10,7 @@ export default function UsersPage() {
         {
           key: "role",
           label: "Role",
-          values: ["Admin", "Lead Auditor", "Auditor", "Auditee", "Viewer"],
+          values: ["Admin", "Lead Auditor", "Auditor", "Viewer"],
         },
         { key: "status", label: "Status", values: ["Active", "Inactive"] },
       ]}
@@ -29,7 +29,7 @@ export default function UsersPage() {
         {
           key: "role",
           label: "Role",
-          options: ["Admin", "Lead Auditor", "Auditor", "Auditee", "Viewer"],
+          options: ["Admin", "Lead Auditor", "Auditor", "Viewer"],
         },
         { key: "department", label: "Department", required: true },
         { key: "status", label: "Status", options: ["Active", "Inactive"] },
