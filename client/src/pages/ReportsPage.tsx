@@ -1,4 +1,7 @@
+import { Download } from "lucide-react";
 import ResourcePage from "../components/common/ResourcePage";
+import { api } from "../lib/api";
+
 export default function ReportsPage() {
   return (
     <ResourcePage
@@ -41,7 +44,28 @@ export default function ReportsPage() {
           options: ["Draft", "Final", "Approved"],
         },
         { key: "pages", label: "Pages", type: "number" },
+        {
+          key: "file",
+          label: "Report File",
+          type: "file",
+          accept: ".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg",
+          hiddenInTable: true,
+        },
       ]}
+      rowActions={(row) =>
+        row.fileName ? (
+          <button
+            type="button"
+            onClick={() =>
+              api.download(`/reports/${row._id}/download`, row.fileName)
+            }
+            className="p-2 text-slate-400 hover:text-ink-700 rounded"
+            title="Download report"
+          >
+            <Download className="w-4 h-4" />
+          </button>
+        ) : null
+      }
     />
   );
 }
