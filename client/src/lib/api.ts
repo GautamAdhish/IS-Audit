@@ -17,11 +17,35 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<ApiR
   return payload;
 }
 
+async function download(path: string, filename?: string): Promise<void> {
+  const token = localStorage.getItem('is_audit_token');
+  const headers = new Headers();
+  if (token) headers.set('Authorization', `Bearer ${token}`);
+
+  const response = await fetch(`${API_BASE}${path}`, { headers });
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({}));
+    if (response.status === 401) window.dispatchEvent(new Event('auth:expired'));
+    throw new Error(payload.message || 'Download failed');
+  }
+
+  const blob = await response.blob();
+  const blobUrl = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = blobUrl;
+  link.download = filename || 'download';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(blobUrl);
+}
+
 export const api = {
   get: <T = any>(path: string) => request<T>(path),
   post: <T = any>(path: string, body?: any) => request<T>(path, { method: 'POST', body: body instanceof FormData ? body : JSON.stringify(body) }),
-  patch: <T = any>(path: string, body?: any) => request<T>(path, { method: 'PATCH', body: JSON.stringify(body) }),
+  patch: <T = any>(path: string, body?: any) => request<T>(path, { method: 'PATCH', body: body instanceof FormData ? body : JSON.stringify(body) }),
   delete: <T = any>(path: string) => request<T>(path, { method: 'DELETE' }),
+  download,
 };
 
 export const resourceApi = (resource: string) => ({
