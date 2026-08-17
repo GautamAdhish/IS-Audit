@@ -8,6 +8,7 @@ import FindingsPage from "./pages/FindingsPage";
 import CapaPage from "./pages/CapaPage";
 import RisksPage from "./pages/RisksPage";
 import EvidencePage from "./pages/EvidencePage";
+import AssetsPage from "./pages/AssetsPage";
 import ReportsPage from "./pages/ReportsPage";
 import UsersPage from "./pages/UsersPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -32,6 +33,7 @@ export default function App() {
               <Route path="/capa" element={<CapaPage />} />
               <Route path="/risks" element={<RisksPage />} />
               <Route path="/evidence" element={<EvidencePage />} />
+              <Route path="/assets" element={<AssetsPage />} />
               <Route path="/reports" element={<ReportsPage />} />
               <Route path="/users" element={<UsersPage />} />
               <Route path="/settings" element={<SettingsPage />} />
