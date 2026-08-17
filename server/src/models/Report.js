@@ -13,7 +13,9 @@ const reportSchema = new mongoose.Schema(
     period: { type: String, required: [true, 'Reporting period is required'], trim: true },
     status: { type: String, enum: REPORT_STATUSES, default: 'Draft' },
     pages: { type: Number, min: 1, default: 1 },
+    fileSize: { type: String },
     filePath: { type: String, select: false },
+    fileName: { type: String },
   },
   { timestamps: true }
 );

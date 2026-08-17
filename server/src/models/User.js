@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-const USER_ROLES = ['Lead Auditor', 'Auditor', 'Auditee', 'Admin', 'Viewer'];
+const USER_ROLES = ['Admin', 'Lead Auditor', 'Auditor', 'Viewer'];
 const USER_STATUSES = ['Active', 'Inactive'];
 
 const userSchema = new mongoose.Schema(
@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
       minlength: [8, 'Password must be at least 8 characters'],
       select: false, // never returned by default
     },
-    role: { type: String, enum: USER_ROLES, default: 'Auditee' },
+    role: { type: String, enum: USER_ROLES, default: 'Viewer' },
     department: { type: String, required: [true, 'Department is required'], trim: true },
     status: { type: String, enum: USER_STATUSES, default: 'Active' },
     lastLogin: { type: Date, default: null },
