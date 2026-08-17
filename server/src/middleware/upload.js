@@ -5,9 +5,7 @@ import { fileURLToPath } from 'node:url';
 import AppError from '../utils/AppError.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const UPLOAD_DIR = path.join(__dirname, '..', '..', 'uploads', 'evidence');
-
-fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+const createUploadDir = (subdir) => path.join(__dirname, '..', '..', 'uploads', subdir);
 
 const ALLOWED_MIME_TYPES = new Set([
   'application/pdf',
@@ -19,15 +17,6 @@ const ALLOWED_MIME_TYPES = new Set([
   'image/jpeg',
 ]);
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
-  filename: (req, file, cb) => {
-    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const ext = path.extname(file.originalname);
-    cb(null, `${unique}${ext}`);
-  },
-});
-
 const fileFilter = (req, file, cb) => {
   if (ALLOWED_MIME_TYPES.has(file.mimetype)) {
     cb(null, true);
@@ -36,11 +25,27 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-const upload = multer({
-  storage,
-  fileFilter,
-  limits: { fileSize: 20 * 1024 * 1024 }, // 20 MB
-});
+export const createUpload = (subdir = 'evidence') => {
+  const uploadDir = createUploadDir(subdir);
+  fs.mkdirSync(uploadDir, { recursive: true });
+
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, uploadDir),
+    filename: (req, file, cb) => {
+      const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const ext = path.extname(file.originalname);
+      cb(null, `${unique}${ext}`);
+    },
+  });
+
+  return multer({
+    storage,
+    fileFilter,
+    limits: { fileSize: 20 * 1024 * 1024 }, // 20 MB
+  });
+};
+
+const upload = createUpload('evidence');
 
 export const humanFileSize = (bytes) => {
   if (bytes < 1024) return `${bytes} B`;
