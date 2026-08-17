@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PageHeader from "../components/common/PageHeader";
 import Badge from "../components/common/Badge";
 import Button from "../components/common/Button";
@@ -11,6 +11,7 @@ export default function EvidencePage() {
   const [type, setType] = useState("All");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     Promise.all([
       api.get("/evidence?limit=100&sort=-uploadedDate"),
@@ -49,6 +50,17 @@ export default function EvidencePage() {
       e.target.value = "";
     }
   };
+
+  const download = async (row: any) => {
+    try {
+      await api.download(
+        `/evidence/${row._id}/download`,
+        row.fileName || row.title || "evidence",
+      );
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
   const filtered = rows.filter(
     (r) =>
       (type === "All" || r.type === type) &&
@@ -63,12 +75,21 @@ export default function EvidencePage() {
         title="Documents & Evidence"
         subtitle={`${rows.length} documents stored`}
         action={
-          <label className="inline-flex">
-            <Button icon={<Upload className="w-4 h-4" />} disabled={busy}>
+          <>
+            <Button
+              icon={<Upload className="w-4 h-4" />}
+              disabled={busy}
+              onClick={() => fileInputRef.current?.click()}
+            >
               Upload Document
             </Button>
-            <input type="file" className="hidden" onChange={upload} />
-          </label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              onChange={upload}
+            />
+          </>
         }
       />
       {error && (
@@ -118,16 +139,19 @@ export default function EvidencePage() {
             <p className="text-xs text-slate-500 mt-2">
               Audit: {r.relatedAudit?.code || "—"}
             </p>
-            {r._id && (
-              <a
+            {r.fileName ? (
+              <button
+                type="button"
+                onClick={() => download(r)}
                 className="mt-3 inline-flex items-center gap-1 text-xs text-ink-700"
-                href={"/api/evidence/" + r._id + "/download"}
-                target="_blank"
-                rel="noreferrer"
               >
                 <Download className="w-3.5 h-3.5" />
                 Download
-              </a>
+              </button>
+            ) : (
+              <span className="mt-3 inline-flex items-center text-xs text-slate-400">
+                No file attached
+              </span>
             )}
           </div>
         ))}
