@@ -18,6 +18,7 @@ import Audit from '../models/Audit.js';
 import Finding from '../models/Finding.js';
 import Capa from '../models/Capa.js';
 import Risk from '../models/Risk.js';
+import Vendor from '../models/Vendor.js';
 import Evidence from '../models/Evidence.js';
 import ChecklistItem from '../models/ChecklistItem.js';
 import Report from '../models/Report.js';
@@ -47,6 +48,7 @@ const run = async () => {
       Finding.deleteMany(),
       Capa.deleteMany(),
       Risk.deleteMany(),
+      Vendor.deleteMany(),
       Evidence.deleteMany(),
       ChecklistItem.deleteMany(),
       Report.deleteMany(),
@@ -58,16 +60,16 @@ const run = async () => {
   }
 
   // --- Users (including one seeded admin login) ---------------------------
-  const defaultPassword = process.env.SEED_ADMIN_PASSWORD || 'ChangeMe123!';
+  const defaultPassword = (process.env.SEED_ADMIN_PASSWORD || 'ChangeMe123!').trim();
   const users = {};
   for (const u of usersSeed) {
     const code = await generateCode('U');
-    const password = u.email === (process.env.SEED_ADMIN_EMAIL || 'admin@company.com') ? defaultPassword : 'Password123!';
+    const password = u.email === (process.env.SEED_ADMIN_EMAIL || 'admin@company.com').trim() ? defaultPassword : 'Password123!';
     const doc = await User.create({ ...u, code, password });
     users[u.name] = doc;
   }
   // Ensure there's a guaranteed admin login using the configured seed credentials
-  const adminEmail = process.env.SEED_ADMIN_EMAIL || 'admin@company.com';
+  const adminEmail = (process.env.SEED_ADMIN_EMAIL || 'admin@company.com').trim();
   if (!(await User.findOne({ email: adminEmail }))) {
     const code = await generateCode('U');
     await User.create({
@@ -156,6 +158,20 @@ const run = async () => {
     await Risk.create({ ...r, code, owner: users[r.owner]._id });
   }
   console.log(`Seeded ${risksSeed.length} risks.`);
+
+  // --- Vendors ---------------------------------------------------------------
+  const vendorsSeed = [
+    { vendorName: 'CloudSecure Systems', vendorType: 'Software', serviceDescription: 'SIEM and log-management platform used by the SOC.', website: 'https://cloudsecuresystems.example.com', country: 'United States', primaryContactName: 'Marcus Webb', email: 'marcus.webb@cloudsecuresystems.example.com', businessOwner: 'Alice Chen', contractEndDate: '2024-11-30', nextReviewDate: '2024-08-15', criticality: 'Critical', dataAccessLevel: 'Confidential', hostingModel: 'SaaS', inherentRisk: 'High', controlEffectiveness: 'Strong', assessmentResult: 'Approved', approvalStatus: 'Approved', notes: 'SOC 2 Type II report on file.' },
+    { vendorName: 'PayLink Processing', vendorType: 'Financial', serviceDescription: 'Payment gateway for customer invoicing.', website: 'https://paylink.example.com', country: 'United Kingdom', primaryContactName: 'Fiona Reyes', email: 'fiona.reyes@paylink.example.com', businessOwner: 'Carol Singh', contractEndDate: '2024-09-01', nextReviewDate: '2024-07-01', criticality: 'Critical', dataAccessLevel: 'Payment Data', hostingModel: 'Cloud Hosted', inherentRisk: 'Critical', controlEffectiveness: 'Adequate', assessmentResult: 'Approved with Conditions', approvalStatus: 'Approved', notes: 'PCI DSS attestation renewal requested.' },
+    { vendorName: 'Meridian Legal Advisory', vendorType: 'Consulting', serviceDescription: 'Outside counsel for regulatory and contract review.', country: 'United States', primaryContactName: 'Daniel Cho', email: 'daniel.cho@meridianlegal.example.com', businessOwner: 'Bob Martinez', contractEndDate: '2025-01-15', nextReviewDate: '2024-10-01', criticality: 'Medium', dataAccessLevel: 'Confidential', hostingModel: 'On-Premise', inherentRisk: 'Medium', controlEffectiveness: 'Strong', assessmentResult: 'Approved', approvalStatus: 'Approved', notes: '' },
+    { vendorName: 'SwiftFreight Logistics', vendorType: 'Logistics', serviceDescription: 'Warehousing and last-mile delivery for regional distribution.', country: 'Canada', primaryContactName: 'Priya Nair', email: 'priya.nair@swiftfreight.example.com', businessOwner: 'Eve Johnson', contractEndDate: '2024-12-20', nextReviewDate: '2024-09-20', criticality: 'Medium', dataAccessLevel: 'Internal', hostingModel: 'On-Premise', inherentRisk: 'Low', controlEffectiveness: 'Adequate', assessmentResult: 'Approved', approvalStatus: 'Approved', notes: '' },
+    { vendorName: 'DataVault Backup Services', vendorType: 'Service', serviceDescription: 'Offsite encrypted backup and disaster-recovery hosting.', website: 'https://datavault.example.com', country: 'Germany', primaryContactName: 'Lars Bergman', email: 'lars.bergman@datavault.example.com', businessOwner: 'Grace Kim', contractEndDate: '2024-06-30', nextReviewDate: '2024-06-01', criticality: 'High', dataAccessLevel: 'PII', hostingModel: 'Hybrid', inherentRisk: 'High', controlEffectiveness: 'Weak', assessmentResult: 'Remediation Required', approvalStatus: 'Pending', notes: 'Encryption-at-rest evidence still outstanding — flagged in last review.' },
+  ];
+  for (const v of vendorsSeed) {
+    const code = await generateCode('V');
+    await Vendor.create({ ...v, code, businessOwner: users[v.businessOwner]._id });
+  }
+  console.log(`Seeded ${vendorsSeed.length} vendors.`);
 
   // --- Evidence ---------------------------------------------------------------
   const evidenceSeed = [
