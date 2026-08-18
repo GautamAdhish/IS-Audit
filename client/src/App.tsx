@@ -10,6 +10,7 @@ import RisksPage from "./pages/RisksPage";
 import EvidencePage from "./pages/EvidencePage";
 import AssetsPage from "./pages/AssetsPage";
 import ReportsPage from "./pages/ReportsPage";
+import VendorManagementAssessmentPage from "./pages/VendorManagementAssessmentPage";
 import UsersPage from "./pages/UsersPage";
 import SettingsPage from "./pages/SettingsPage";
 import LoginPage from "./pages/LoginPage";
@@ -34,6 +35,10 @@ export default function App() {
               <Route path="/risks" element={<RisksPage />} />
               <Route path="/evidence" element={<EvidencePage />} />
               <Route path="/assets" element={<AssetsPage />} />
+              <Route
+                path="/vendor-management"
+                element={<VendorManagementAssessmentPage />}
+              />
               <Route path="/reports" element={<ReportsPage />} />
               <Route path="/users" element={<UsersPage />} />
               <Route path="/settings" element={<SettingsPage />} />
