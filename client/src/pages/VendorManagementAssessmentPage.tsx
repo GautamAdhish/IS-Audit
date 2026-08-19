@@ -6,7 +6,13 @@ export default function VendorManagementAssessmentPage() {
       title="Vendor Management"
       subtitle="Vendor profiles, risk posture, and approval status — saved directly to the database"
       resource="vendors"
-      searchKeys={["vendorName", "serviceDescription", "country", "primaryContactName", "email"]}
+      searchKeys={[
+        "vendorName",
+        "serviceDescription",
+        "country",
+        "primaryContactName",
+        "email",
+      ]}
       filters={[
         {
           key: "criticality",
@@ -82,7 +88,14 @@ export default function VendorManagementAssessmentPage() {
         {
           key: "dataAccessLevel",
           label: "Data Access",
-          options: ["None", "Internal", "Confidential", "PII", "Payment Data", "PHI"],
+          options: [
+            "None",
+            "Internal",
+            "Confidential",
+            "PII",
+            "Payment Data",
+            "PHI",
+          ],
           hiddenInTable: true,
         },
         {
