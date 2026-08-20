@@ -22,6 +22,7 @@ import checklistRoutes from './routes/checklistRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import settingsRoutes from './routes/settingsRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
+import aiReportRoutes from './routes/aiReportRoutes.js';
 
 import notFound from './middleware/notFound.js';
 import errorHandler from './middleware/errorHandler.js';
@@ -109,6 +110,7 @@ app.use('/api/checklist', checklistRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/ai-reports', aiReportRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
