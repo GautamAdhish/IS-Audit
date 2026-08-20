@@ -11,6 +11,7 @@ import {
   ShieldAlert,
   FolderOpen,
   BarChart2,
+  FileBarChart,
   Building2,
   Users,
   Settings,
@@ -32,6 +33,7 @@ const navItems = [
   { label: "Assets", path: "/assets", icon: Image },
   { label: "Vendor Management", path: "/vendor-management", icon: Building2 },
   { label: "Reports", path: "/reports", icon: BarChart2 },
+  { label: "Summary Report", path: "/summary", icon: FileBarChart },
   { label: "Users", path: "/users", icon: Users },
   { label: "Settings", path: "/settings", icon: Settings },
 ];
