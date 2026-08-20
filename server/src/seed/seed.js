@@ -19,6 +19,7 @@ import Finding from '../models/Finding.js';
 import Capa from '../models/Capa.js';
 import Risk from '../models/Risk.js';
 import Vendor from '../models/Vendor.js';
+import Asset from '../models/Asset.js';
 import Evidence from '../models/Evidence.js';
 import ChecklistItem from '../models/ChecklistItem.js';
 import Report from '../models/Report.js';
@@ -31,9 +32,9 @@ const usersSeed = [
   { name: 'Alice Chen', email: 'alice.chen@company.com', role: 'Lead Auditor', department: 'IT', status: 'Active' },
   { name: 'Bob Martinez', email: 'bob.m@company.com', role: 'Auditor', department: 'Legal', status: 'Active' },
   { name: 'Carol Singh', email: 'carol.s@company.com', role: 'Auditor', department: 'Finance', status: 'Active' },
-  { name: 'David Lee', email: 'david.lee@company.com', role: 'Auditee', department: 'HR', status: 'Active' },
+  { name: 'David Lee', email: 'david.lee@company.com', role: 'Auditor', department: 'HR', status: 'Active' },
   { name: 'Eve Johnson', email: 'eve.j@company.com', role: 'Auditor', department: 'Operations', status: 'Active' },
-  { name: 'Frank Wu', email: 'frank.wu@company.com', role: 'Auditee', department: 'Sales', status: 'Active' },
+  { name: 'Frank Wu', email: 'frank.wu@company.com', role: 'Auditor', department: 'Sales', status: 'Active' },
   { name: 'Grace Kim', email: 'grace.kim@company.com', role: 'Admin', department: 'Operations', status: 'Active' },
   { name: 'Henry Patel', email: 'henry.p@company.com', role: 'Viewer', department: 'Finance', status: 'Inactive' },
 ];
@@ -49,6 +50,7 @@ const run = async () => {
       Capa.deleteMany(),
       Risk.deleteMany(),
       Vendor.deleteMany(),
+      Asset.deleteMany(),
       Evidence.deleteMany(),
       ChecklistItem.deleteMany(),
       Report.deleteMany(),
@@ -158,6 +160,25 @@ const run = async () => {
     await Risk.create({ ...r, code, owner: users[r.owner]._id });
   }
   console.log(`Seeded ${risksSeed.length} risks.`);
+
+  // --- Assets ---------------------------------------------------------------
+  const assetsSeed = [
+    { assetName: 'Core Domain Controller', assetTag: 'IT-SRV-001', category: 'Hardware', location: 'HQ Data Center, Rack A3', department: 'IT', condition: 'Good', assessmentStatus: 'Pass', assessedBy: 'Alice Chen', assessmentDate: '2024-01-18', notes: 'Firmware up to date, redundant PSU healthy.' },
+    { assetName: 'Firewall Appliance — Perimeter', assetTag: 'IT-NET-004', category: 'Hardware', location: 'HQ Data Center, Rack A1', department: 'IT', condition: 'Fair', assessmentStatus: 'Needs Review', assessedBy: 'Alice Chen', assessmentDate: '2024-01-19', notes: 'Firmware two versions behind vendor latest — schedule upgrade window.' },
+    { assetName: 'Employee Laptop Fleet — Sales', assetTag: 'SLS-LT-012', category: 'Equipment', location: 'Sales Floor, 2nd Floor', department: 'Sales', condition: 'Poor', assessmentStatus: 'Non-Compliant', assessedBy: 'Frank Wu', assessmentDate: '2024-02-11', notes: 'Disk encryption not enforced on 4 of 12 devices sampled.' },
+    { assetName: 'Server Room Access Control Panel', assetTag: 'OPS-FAC-002', category: 'Facility', location: 'HQ Data Center Entrance', department: 'Operations', condition: 'Good', assessmentStatus: 'Pass', assessedBy: 'Eve Johnson', assessmentDate: '2024-01-17', notes: 'Badge log reviewed, no anomalies.' },
+    { assetName: 'Backup Generator — Building B', assetTag: 'OPS-FAC-007', category: 'Facility', location: 'Building B, Utility Room', department: 'Operations', condition: 'Fair', assessmentStatus: 'Needs Review', assessedBy: 'Eve Johnson', assessmentDate: '2024-01-17', notes: 'Last load test overdue by 3 months.' },
+    { assetName: 'Fleet Delivery Van #3', assetTag: 'OPS-VEH-003', category: 'Vehicle', location: 'Distribution Yard', department: 'Operations', condition: 'Good', assessmentStatus: 'Pass', assessedBy: 'Grace Kim', assessmentDate: '2024-01-22', notes: 'Registration and insurance current.' },
+    { assetName: 'Finance Dept. Shredder', assetTag: 'FIN-TL-009', category: 'Tool', location: 'Finance Office, 3rd Floor', department: 'Finance', condition: 'Excellent', assessmentStatus: 'Pass', assessedBy: 'Carol Singh', assessmentDate: '2024-01-29', notes: 'Cross-cut, meets document destruction policy.' },
+    { assetName: 'HR Filing Cabinet (Locked)', assetTag: 'HR-EQ-005', category: 'Equipment', location: 'HR Office, 1st Floor', department: 'HR', condition: 'Fair', assessmentStatus: 'Non-Compliant', assessedBy: 'David Lee', assessmentDate: '2024-01-24', notes: 'Lock mechanism faulty — sensitive personnel files exposed.' },
+    { assetName: 'Legacy File Server (Decommission Pending)', assetTag: 'IT-SRV-014', category: 'Hardware', location: 'HQ Data Center, Rack C2', department: 'IT', condition: 'Poor', assessmentStatus: 'Retired', assessedBy: 'Alice Chen', assessmentDate: '2024-01-10', notes: 'Marked for decommission after data migration confirmed complete.' },
+    { assetName: 'Visitor Badge Printer', assetTag: 'OPS-EQ-011', category: 'Equipment', location: 'Main Reception', department: 'Operations', condition: 'Good', assessmentStatus: 'Pass', assessedBy: 'Grace Kim', assessmentDate: '2024-01-23', notes: '' },
+  ];
+  for (const a of assetsSeed) {
+    const code = await generateCode('AS');
+    await Asset.create({ ...a, code, assessedBy: users[a.assessedBy]._id });
+  }
+  console.log(`Seeded ${assetsSeed.length} assets.`);
 
   // --- Vendors ---------------------------------------------------------------
   const vendorsSeed = [
