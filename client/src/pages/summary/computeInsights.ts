@@ -4,6 +4,8 @@ import type { SummaryData } from "./useSummaryData";
 // version and the "auditor" version are always describing the same
 // underlying numbers, just at different levels of detail.
 
+export type Trajectory = "Escalating" | "Stable" | "Improving";
+
 export interface VulnerabilityArea {
   key: string;
   label: string;
@@ -12,6 +14,8 @@ export interface VulnerabilityArea {
   openCount: number;
   totalCount: number;
   topFixes: string[]; // concrete remediation text pulled from CAPA / mitigation fields
+  trajectory: Trajectory; // heuristic read on where this area is headed next
+  predictedScore: number; // 0-100 composite used to rank/predict where the next exposure is likeliest
 }
 
 export interface Insights {
@@ -29,6 +33,7 @@ export interface Insights {
   assetCompliance: { name: string; value: number; color: string }[];
   vendorResidualRisk: { name: string; value: number; color: string }[];
   vulnerabilityAreas: VulnerabilityArea[];
+  predictedRisks: VulnerabilityArea[]; // vulnerabilityAreas ranked by predictedScore, worst first
   criticalOpenRisks: any[];
   overdueCapas: any[];
 }
@@ -149,7 +154,7 @@ export function computeInsights(data: SummaryData): Insights {
   const auditsCompleted = audits.filter((a) => a.status === "Completed").length;
 
   // --- Vulnerability areas (the "how vulnerable, by how much, how to fix" table) ---
-  const vulnerabilityAreas: VulnerabilityArea[] = [
+  const rawVulnerabilityAreas: Omit<VulnerabilityArea, "trajectory" | "predictedScore">[] = [
     {
       key: "checklist",
       label: "Compliance Checklist",
@@ -228,6 +233,37 @@ export function computeInsights(data: SummaryData): Insights {
     },
   ];
 
+  // --- Predictive read: without historical time-series data, we can't fit a
+  // trend line, so instead we use a transparent heuristic — comparing how
+  // severe the *open* backlog skews (severityScore) against how big it is
+  // (exposurePct). An area whose open items skew disproportionately toward
+  // the worst-severity bucket is read as "Escalating" even if its overall
+  // exposure % looks moderate today; one whose backlog is mostly low-severity
+  // noise is read as "Improving". This is a stated model, not a guarantee.
+  function trajectoryOf(a: Omit<VulnerabilityArea, "trajectory" | "predictedScore">): Trajectory {
+    const skew = a.severityScore - a.exposurePct;
+    if (skew >= 15) return "Escalating";
+    if (skew <= -15) return "Improving";
+    return "Stable";
+  }
+  function predictedScoreOf(a: Omit<VulnerabilityArea, "trajectory" | "predictedScore">): number {
+    // weights severity skew most heavily, then raw exposure, then sheer
+    // backlog size — the combination used to rank "where's the next
+    // exposure likeliest to surface" across areas.
+    const skew = a.severityScore - a.exposurePct;
+    const backlogFactor = Math.min(20, a.openCount * 2);
+    const score = a.exposurePct * 0.4 + a.severityScore * 0.45 + Math.max(0, skew) * 0.15 + backlogFactor * 0.1;
+    return Math.round(Math.min(100, score));
+  }
+
+  const vulnerabilityAreas: VulnerabilityArea[] = rawVulnerabilityAreas.map((a) => ({
+    ...a,
+    trajectory: trajectoryOf(a),
+    predictedScore: predictedScoreOf(a),
+  }));
+
+  const predictedRisks = [...vulnerabilityAreas].sort((a, b) => b.predictedScore - a.predictedScore);
+
   const overallExposure = Math.round(
     vulnerabilityAreas.reduce((s, a) => s + a.exposurePct, 0) / vulnerabilityAreas.length
   );
@@ -249,7 +285,42 @@ export function computeInsights(data: SummaryData): Insights {
     assetCompliance,
     vendorResidualRisk,
     vulnerabilityAreas,
+    predictedRisks,
     criticalOpenRisks,
     overdueCapas,
+  };
+}
+
+// The narrative generator (server/scripts/generate_narrative.py) only ever
+// reads a subset of Insights — see that file for the exact fields. The rest
+// (predictedRisks, riskMatrix, complianceByDept, assetCompliance,
+// vendorResidualRisk, capaByStatus, findingsByStatus) exists for the report
+// UI only and was never meant to cross the wire. Sending the full Insights
+// object here is what pushed a real payload over the API's 10kb body limit
+// once predictedRisks (a full duplicate of vulnerabilityAreas) was added —
+// this keeps the POST to exactly what the backend uses.
+export function toNarrativePayload(insights: Insights) {
+  return {
+    overallExposure: insights.overallExposure,
+    overallLabel: insights.overallLabel,
+    avgCompliance: insights.avgCompliance,
+    auditsCompleted: insights.auditsCompleted,
+    auditsTotal: insights.auditsTotal,
+    findingsBySeverity: insights.findingsBySeverity,
+    risksByLevel: insights.risksByLevel,
+    vulnerabilityAreas: insights.vulnerabilityAreas,
+    // only .length and (for the first item) these named fields are read —
+    // trim to that instead of shipping every field on every open risk.
+    criticalOpenRisks: insights.criticalOpenRisks.slice(0, 10).map((r) => ({
+      code: r.code,
+      title: r.title,
+      likelihood: r.likelihood,
+      impact: r.impact,
+      riskScore: r.riskScore,
+      level: r.level,
+      mitigationPlan: r.mitigationPlan,
+    })),
+    // only .length is ever read for this one
+    overdueCapas: insights.overdueCapas.map(() => ({})),
   };
 }

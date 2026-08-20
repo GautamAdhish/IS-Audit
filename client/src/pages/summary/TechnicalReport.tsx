@@ -12,13 +12,14 @@ const TechnicalReport: React.FC<{ insights: Insights }> = ({ insights }) => {
   const {
     findingsBySeverity, findingsByStatus, risksByLevel, riskMatrix,
     capaByStatus, assetCompliance, vendorResidualRisk, complianceByDept,
-    vulnerabilityAreas, criticalOpenRisks, overdueCapas, overallExposure,
+    vulnerabilityAreas, predictedRisks, criticalOpenRisks, overdueCapas, overallExposure,
   } = insights;
 
   return (
     <div className="space-y-6">
       {/* Headline metrics strip */}
-      <Card>
+      <Card data-pdf-section className="print:break-inside-avoid">
+        <CardHeader title="Headline Metrics" subtitle="Point-in-time snapshot across every tracked control area" />
         <CardBody className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
             <p className="text-[11px] text-slate-500 uppercase tracking-wide">Overall Exposure Index</p>
@@ -39,11 +40,14 @@ const TechnicalReport: React.FC<{ insights: Insights }> = ({ insights }) => {
         </CardBody>
       </Card>
 
-      <VulnerabilityMap areas={vulnerabilityAreas} />
+      <div data-pdf-section className="print:break-inside-avoid">
+        <VulnerabilityMap areas={vulnerabilityAreas} predicted={predictedRisks} />
+      </div>
 
-      {/* Chart grid */}
+      {/* Chart grid — each chart is its own atomic section so PDF export
+          never slices a chart across a page boundary */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        <Card data-pdf-section className="print:break-inside-avoid">
           <CardHeader title="Findings by Severity" subtitle="Major / Minor / Observation" />
           <CardBody>
             <ResponsiveContainer width="100%" height={240}>
@@ -58,7 +62,7 @@ const TechnicalReport: React.FC<{ insights: Insights }> = ({ insights }) => {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card data-pdf-section className="print:break-inside-avoid">
           <CardHeader title="Findings by Status" subtitle="Open / In Review / Closed" />
           <CardBody>
             <ResponsiveContainer width="100%" height={240}>
@@ -73,7 +77,7 @@ const TechnicalReport: React.FC<{ insights: Insights }> = ({ insights }) => {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card data-pdf-section className="print:break-inside-avoid">
           <CardHeader title="Risk Register by Level" subtitle="Critical / High / Medium / Low" />
           <CardBody>
             <ResponsiveContainer width="100%" height={240}>
@@ -91,7 +95,7 @@ const TechnicalReport: React.FC<{ insights: Insights }> = ({ insights }) => {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card data-pdf-section className="print:break-inside-avoid">
           <CardHeader title="Risk Heat Matrix" subtitle="Likelihood × Impact (bubble size = number of risks)" />
           <CardBody>
             <ResponsiveContainer width="100%" height={240}>
@@ -107,7 +111,7 @@ const TechnicalReport: React.FC<{ insights: Insights }> = ({ insights }) => {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card data-pdf-section className="print:break-inside-avoid">
           <CardHeader title="CAPA by Status" subtitle="Corrective / preventive action tracking" />
           <CardBody>
             <ResponsiveContainer width="100%" height={240}>
@@ -125,7 +129,7 @@ const TechnicalReport: React.FC<{ insights: Insights }> = ({ insights }) => {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card data-pdf-section className="print:break-inside-avoid">
           <CardHeader title="Compliance by Department" />
           <CardBody>
             <ResponsiveContainer width="100%" height={240}>
@@ -145,7 +149,7 @@ const TechnicalReport: React.FC<{ insights: Insights }> = ({ insights }) => {
           </CardBody>
         </Card>
 
-        <Card className="lg:col-span-2">
+        <Card data-pdf-section className="lg:col-span-2 print:break-inside-avoid">
           <CardHeader title="Asset & Vendor Residual Risk" subtitle="Post-control exposure" />
           <CardBody className="grid grid-cols-2 gap-4">
             <ResponsiveContainer width="100%" height={220}>
@@ -171,8 +175,8 @@ const TechnicalReport: React.FC<{ insights: Insights }> = ({ insights }) => {
       </div>
 
       {/* Detailed vulnerability breakdown w/ remediation */}
-      <Card>
-        <CardHeader title="Vulnerability Detail & Remediation Plan" subtitle="Exposure % by control area, with specific corrective actions pulled from the register" />
+      <Card data-pdf-section>
+        <CardHeader title="Vulnerability Detail & Remediation Plan" subtitle="Exposure % by control area, predicted trajectory, and specific corrective actions pulled from the register" />
         <CardBody className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
@@ -180,6 +184,7 @@ const TechnicalReport: React.FC<{ insights: Insights }> = ({ insights }) => {
                 <th className="py-2 pr-4">Area</th>
                 <th className="py-2 pr-4">Exposure</th>
                 <th className="py-2 pr-4">Severity Weight</th>
+                <th className="py-2 pr-4">Trajectory</th>
                 <th className="py-2 pr-4">Open / Total</th>
                 <th className="py-2">Recommended Fixes</th>
               </tr>
@@ -203,6 +208,19 @@ const TechnicalReport: React.FC<{ insights: Insights }> = ({ insights }) => {
                     </div>
                   </td>
                   <td className="py-2.5 pr-4 text-slate-600">{a.severityScore}%</td>
+                  <td className="py-2.5 pr-4 whitespace-nowrap">
+                    <span
+                      className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full border ${
+                        a.trajectory === "Escalating"
+                          ? "text-red-600 bg-red-50 border-red-200"
+                          : a.trajectory === "Improving"
+                          ? "text-green-600 bg-green-50 border-green-200"
+                          : "text-amber-600 bg-amber-50 border-amber-200"
+                      }`}
+                    >
+                      {a.trajectory}
+                    </span>
+                  </td>
                   <td className="py-2.5 pr-4 text-slate-600 whitespace-nowrap">{a.openCount} / {a.totalCount}</td>
                   <td className="py-2.5 text-slate-600">
                     {a.topFixes.length === 0 ? (

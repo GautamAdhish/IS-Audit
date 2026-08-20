@@ -38,7 +38,7 @@ const GeneralReport: React.FC<{ insights: Insights }> = ({ insights }) => {
   return (
     <div className="space-y-6">
       {/* Headline */}
-      <Card>
+      <Card data-pdf-section className="print:break-inside-avoid">
         <CardBody className="flex flex-col md:flex-row items-center gap-8">
           <div className="shrink-0 text-center">
             <div className="relative w-32 h-32 mx-auto">
@@ -73,7 +73,7 @@ const GeneralReport: React.FC<{ insights: Insights }> = ({ insights }) => {
       </Card>
 
       {/* Figurines row */}
-      <Card>
+      <Card data-pdf-section className="print:break-inside-avoid">
         <CardBody className="flex flex-wrap justify-around gap-y-6">
           <Figurine icon={ClipboardCheck} value={`${auditsCompleted}/${auditsTotal}`} label="Audits completed" tone="good" />
           <Figurine icon={ShieldCheck} value={`${avgCompliance}%`} label="Average compliance score" tone={avgCompliance >= 80 ? "good" : avgCompliance >= 60 ? "warn" : "bad"} />
@@ -86,7 +86,7 @@ const GeneralReport: React.FC<{ insights: Insights }> = ({ insights }) => {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        <Card data-pdf-section className="print:break-inside-avoid">
           <CardHeader title="What Kind of Issues Did We Find" subtitle="In plain terms — no technical detail" />
           <CardBody>
             <ResponsiveContainer width="100%" height={260}>
@@ -103,7 +103,7 @@ const GeneralReport: React.FC<{ insights: Insights }> = ({ insights }) => {
           </CardBody>
         </Card>
 
-        <Card>
+        <Card data-pdf-section className="print:break-inside-avoid">
           <CardHeader title="Compliance by Department" subtitle="Higher is better" />
           <CardBody>
             <ResponsiveContainer width="100%" height={260}>
@@ -125,7 +125,7 @@ const GeneralReport: React.FC<{ insights: Insights }> = ({ insights }) => {
       </div>
 
       {/* Where we're most exposed, plain language */}
-      <Card>
+      <Card data-pdf-section>
         <CardHeader title="Where We're Most Exposed" subtitle="The three areas needing the most attention right now" />
         <CardBody className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {worstAreas.map((a) => (

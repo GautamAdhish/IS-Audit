@@ -3,6 +3,7 @@ import { Sparkles, RefreshCw, AlertTriangle, Loader2 } from "lucide-react";
 import Card, { CardBody } from "../../components/common/Card";
 import { api } from "../../lib/api";
 import type { Insights } from "./computeInsights";
+import { toNarrativePayload } from "./computeInsights";
 
 interface Narrative {
   headline: string;
@@ -26,7 +27,10 @@ const AINarrativePanel: React.FC<{ reportType: "general" | "technical"; insights
     setState("loading");
     setError("");
     try {
-      const res = await api.post<Narrative>("/ai-reports/generate", { reportType, insights });
+      const res = await api.post<Narrative>("/ai-reports/generate", {
+        reportType,
+        insights: toNarrativePayload(insights),
+      });
       setData(res.data);
       setState("done");
     } catch (e: any) {
@@ -36,7 +40,7 @@ const AINarrativePanel: React.FC<{ reportType: "general" | "technical"; insights
   };
 
   return (
-    <Card className="print:break-inside-avoid">
+    <Card data-pdf-section className="print:break-inside-avoid">
       <CardBody>
         <div className="flex items-start justify-between gap-4 mb-1">
           <div className="flex items-center gap-2">
