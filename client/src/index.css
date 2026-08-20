@@ -78,3 +78,40 @@
     font-family: var(--font-mono);
   }
 }
+
+/*
+  Native browser print (Ctrl/Cmd+P) fallback.
+  The app shell is a fixed h-screen flex layout with its own internal
+  scroll container (see DashboardLayout) — left as-is, the print engine
+  only rasterises whatever fits the current viewport, so anything below
+  the fold never makes it onto the page. This resets the shell to normal
+  document flow for print and hides the chrome that shouldn't appear in
+  a printed report at all. The in-app "Download PDF" button bypasses this
+  entirely (it renders a real PDF via canvas capture), so this only
+  matters if someone still reaches for the OS print dialog directly.
+*/
+@media print {
+  html,
+  body,
+  #root {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  aside,
+  header {
+    display: none !important;
+  }
+
+  main {
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  .flex.h-screen,
+  .flex.h-screen > div {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+}
