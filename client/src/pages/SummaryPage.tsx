@@ -3,11 +3,12 @@ import { FileDown, Loader2, Users, ShieldAlert } from "lucide-react";
 import PageHeader from "../components/common/PageHeader";
 import { useAuth } from "../context/AuthContext";
 import { useSummaryData } from "./summary/useSummaryData";
-import { computeInsights } from "./summary/computeInsights";
+import { computeInsights, toNarrativePayload } from "./summary/computeInsights";
 import GeneralReport from "./summary/GeneralReport";
 import TechnicalReport from "./summary/TechnicalReport";
 import AINarrativePanel from "./summary/AINarrativePanel";
-import { exportSectionsToPdf } from "../lib/exportPdf";
+import { exportReportToPdf, type NarrativeData } from "../lib/exportPdf";
+import { api } from "../lib/api";
 
 type ReportType = "general" | "technical";
 
@@ -20,17 +21,49 @@ export default function SummaryPage() {
   const insights = useMemo(() => computeInsights(data), [data]);
   const reportRef = useRef<HTMLDivElement>(null);
 
+  // Kept per report type (not a single value) because switching tabs remounts
+  // AINarrativePanel — without this, a narrative generated on one tab would
+  // vanish the moment the user looked at the other one.
+  const [narratives, setNarratives] = useState<
+    Record<ReportType, NarrativeData | null>
+  >({
+    general: null,
+    technical: null,
+  });
+
   const reportTitle =
-    reportType === "general" ? "General Summary Report — Board" : "Technical Summary Report — Auditors";
+    reportType === "general"
+      ? "General Summary Report — Board"
+      : "Technical Summary Report — Auditors";
 
   const handleExport = async () => {
-    if (!reportRef.current || exporting) return;
+    if (exporting) return;
     setExporting(true);
     setExportError("");
     try {
+      // The PDF should always carry the AI narrative, whether or not the
+      // user remembered to click "Generate AI Narrative" first.
+      let narrative = narratives[reportType];
+      if (!narrative) {
+        try {
+          const res = await api.post<NarrativeData>("/ai-reports/generate", {
+            reportType,
+            insights: toNarrativePayload(insights),
+          });
+          narrative = res.data;
+          setNarratives((prev) => ({ ...prev, [reportType]: narrative }));
+        } catch {
+          // Export still proceeds — exportReportToPdf renders a clear
+          // placeholder note in the narrative section when this is null.
+          narrative = null;
+        }
+      }
+
       const dateStamp = new Date().toISOString().slice(0, 10);
-      await exportSectionsToPdf(
-        reportRef.current,
+      await exportReportToPdf(
+        insights,
+        reportType,
+        narrative,
         {
           title: reportTitle,
           subtitle:
@@ -41,7 +74,7 @@ export default function SummaryPage() {
           preparedBy: user?.name || user?.email || "IS-Audit System",
           generatedAt: new Date(),
         },
-        `IS-Audit-${reportType}-report-${dateStamp}.pdf`
+        `IS-Audit-${reportType}-report-${dateStamp}.pdf`,
       );
     } catch (e: any) {
       setExportError(e.message || "Failed to generate PDF.");
@@ -69,7 +102,9 @@ export default function SummaryPage() {
               )}
               {exporting ? "Preparing PDF…" : "Download PDF"}
             </button>
-            {exportError && <p className="text-xs text-red-500">{exportError}</p>}
+            {exportError && (
+              <p className="text-xs text-red-500">{exportError}</p>
+            )}
           </div>
         }
       />
@@ -98,9 +133,7 @@ export default function SummaryPage() {
         >
           <ShieldAlert className="w-4 h-4" />
           Technical Report
-          <span className="text-[10px] font-normal opacity-75">
-            (Auditors)
-          </span>
+          <span className="text-[10px] font-normal opacity-75">(Auditors)</span>
         </button>
       </div>
 
@@ -120,12 +153,26 @@ export default function SummaryPage() {
         <div ref={reportRef}>
           {reportType === "general" ? (
             <div className="space-y-6">
-              <AINarrativePanel key="general" reportType="general" insights={insights} />
+              <AINarrativePanel
+                key="general"
+                reportType="general"
+                insights={insights}
+                onNarrativeChange={(n) =>
+                  setNarratives((prev) => ({ ...prev, general: n }))
+                }
+              />
               <GeneralReport insights={insights} />
             </div>
           ) : (
             <div className="space-y-6">
-              <AINarrativePanel key="technical" reportType="technical" insights={insights} />
+              <AINarrativePanel
+                key="technical"
+                reportType="technical"
+                insights={insights}
+                onNarrativeChange={(n) =>
+                  setNarratives((prev) => ({ ...prev, technical: n }))
+                }
+              />
               <TechnicalReport insights={insights} />
             </div>
           )}

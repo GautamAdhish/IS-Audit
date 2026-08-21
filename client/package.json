@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "clsx": "2.1.1",
-    "html2canvas-pro": "^1.5.8",
     "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
     "lucide-react": "^1.31.0",
     "react": "19.2.6",
     "react-dom": "19.2.6",

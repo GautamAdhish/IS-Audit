@@ -4,38 +4,36 @@ import Card, { CardBody } from "../../components/common/Card";
 import { api } from "../../lib/api";
 import type { Insights } from "./computeInsights";
 import { toNarrativePayload } from "./computeInsights";
+import type { NarrativeData } from "../../lib/exportPdf";
 
-interface Narrative {
-  headline: string;
-  narrative: string;
-  topConcerns: string[];
-  recommendations: string[];
-}
-
-// Calls the backend, which calls the Anthropic API — this component never
-// generates text itself, it only triggers, loads, and renders what the
-// model returns for the given report type and the already-computed insights.
-const AINarrativePanel: React.FC<{ reportType: "general" | "technical"; insights: Insights }> = ({
-  reportType,
-  insights,
-}) => {
+// Calls the backend (server/scripts/generate_narrative.py, a deterministic
+// rule-based generator — see aiReportController.js) — this component never
+// generates text itself, it only triggers, loads, and renders what comes
+// back for the given report type and the already-computed insights.
+const AINarrativePanel: React.FC<{
+  reportType: "general" | "technical";
+  insights: Insights;
+  onNarrativeChange?: (data: NarrativeData | null) => void;
+}> = ({ reportType, insights, onNarrativeChange }) => {
   const [state, setState] = useState<"idle" | "loading" | "error" | "done">("idle");
-  const [data, setData] = useState<Narrative | null>(null);
+  const [data, setData] = useState<NarrativeData | null>(null);
   const [error, setError] = useState("");
 
   const generate = async () => {
     setState("loading");
     setError("");
     try {
-      const res = await api.post<Narrative>("/ai-reports/generate", {
+      const res = await api.post<NarrativeData>("/ai-reports/generate", {
         reportType,
         insights: toNarrativePayload(insights),
       });
       setData(res.data);
       setState("done");
+      onNarrativeChange?.(res.data);
     } catch (e: any) {
       setError(e.message || "Failed to generate AI narrative.");
       setState("error");
+      onNarrativeChange?.(null);
     }
   };
 
