@@ -148,8 +148,7 @@ export default function SummaryPage() {
       ) : (
         // This is exactly what gets captured for the PDF — nothing outside
         // this ref (page header, report-type toggle, download button) is
-        // ever included, so we don't need any print-media trickery to hide
-        // app chrome from the export.
+        // ever included, so we don't need any print-media trickery to hide app chrome from the export.
         <div ref={reportRef}>
           {reportType === "general" ? (
             <div className="space-y-6">
