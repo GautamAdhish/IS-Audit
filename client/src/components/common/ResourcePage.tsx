@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import PageHeader from "./PageHeader";
 import Badge, { statusVariant } from "./Badge";
 import Button from "./Button";
@@ -15,7 +16,14 @@ import IconChip from "./IconChip";
 import { Pencil, Plus, Search, Trash2, type LucideIcon } from "lucide-react";
 import { resourceApi } from "../../lib/api";
 
-const BADGE_FIELD_KEYS = ["status", "severity", "level", "priority", "role", "type"];
+const BADGE_FIELD_KEYS = [
+  "status",
+  "severity",
+  "level",
+  "priority",
+  "role",
+  "type",
+];
 
 // statusVariant() returns "gray" for unrecognised strings; StatTile/IconChip
 // use "neutral" for the same idea, so this is the one place that translates.
@@ -74,7 +82,8 @@ export default function ResourcePage({
   rowActions,
 }: Props) {
   const [rows, setRows] = useState<any[]>([]);
-  const [search, setSearch] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [search, setSearch] = useState(searchParams.get("q") || "");
   const [filter, setFilter] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [selectOptions, setSelectOptions] = useState<Record<string, any[]>>({});
@@ -100,6 +109,11 @@ export default function ResourcePage({
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const nextSearch = searchParams.get("q") || "";
+    setSearch(nextSearch);
+  }, [searchParams]);
 
   useEffect(() => {
     void load();
@@ -198,7 +212,9 @@ export default function ResourcePage({
     setDeleting(true);
     try {
       await api.remove(deleteTarget._id);
-      setRows((current) => current.filter((row) => row._id !== deleteTarget._id));
+      setRows((current) =>
+        current.filter((row) => row._id !== deleteTarget._id),
+      );
       setDeleteTarget(null);
     } catch (exception: any) {
       setError(exception.message);
@@ -214,14 +230,18 @@ export default function ResourcePage({
 
   // The field already driving auto-badges (status/severity/level/...) also
   // decides the tone of the identity-column icon chip and the summary tiles.
-  const toneFieldKey = fields.find((field) => BADGE_FIELD_KEYS.includes(field.key))?.key;
+  const toneFieldKey = fields.find((field) =>
+    BADGE_FIELD_KEYS.includes(field.key),
+  )?.key;
 
   const summaryTiles = filters.length
     ? [
         { label: `Total ${title}`, value: rows.length, tone: "blue" as const },
         ...filters[0].values.map((value) => ({
           label: value,
-          value: rows.filter((row) => String(display(row[filters[0].key])) === value).length,
+          value: rows.filter(
+            (row) => String(display(row[filters[0].key])) === value,
+          ).length,
           tone: toTileTone(value),
         })),
       ]
@@ -241,7 +261,9 @@ export default function ResourcePage({
 
       if (index !== 0 || !icon) return content;
 
-      const tone = toneFieldKey ? toTileTone(display(row[toneFieldKey])) : "neutral";
+      const tone = toneFieldKey
+        ? toTileTone(display(row[toneFieldKey]))
+        : "neutral";
       return (
         <div className="flex items-center gap-3">
           <IconChip icon={icon} tone={tone as any} />
@@ -294,7 +316,17 @@ export default function ResourcePage({
           <Input
             icon={<Search className="w-4 h-4" />}
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              const value = event.target.value;
+              setSearch(value);
+              const nextParams = new URLSearchParams(searchParams);
+              if (value.trim()) {
+                nextParams.set("q", value.trim());
+              } else {
+                nextParams.delete("q");
+              }
+              setSearchParams(nextParams, { replace: true });
+            }}
             placeholder={`Search ${title.toLowerCase()}…`}
           />
         </div>

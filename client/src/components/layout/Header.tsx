@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Menu,
   Bell,
@@ -138,11 +138,18 @@ const buildNotifications = (
 const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [settings, setSettings] = useState<NotificationSettings>({});
+  const [searchQuery, setSearchQuery] = useState("");
 
   const unreadCount = notifications.filter((item) => !item.read).length;
   const roleDefinition = getRoleDefinition(user?.role);
+
+  useEffect(() => {
+    const nextQuery = new URLSearchParams(location.search).get("q") || "";
+    setSearchQuery(nextQuery);
+  }, [location.search]);
 
   useEffect(() => {
     const savedState = JSON.parse(
@@ -213,6 +220,31 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
     navigate(item.path);
   };
 
+  const handleSearchSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    const trimmedQuery = searchQuery.trim();
+    const searchableRoutes = [
+      "/audits",
+      "/findings",
+      "/checklist",
+      "/capa",
+      "/risks",
+      "/evidence",
+      "/assets",
+      "/reports",
+      "/users",
+      "/vendor-management",
+    ];
+    const targetRoute = searchableRoutes.includes(location.pathname)
+      ? location.pathname
+      : "/audits";
+
+    navigate({
+      pathname: targetRoute,
+      search: trimmedQuery ? `?q=${encodeURIComponent(trimmedQuery)}` : "",
+    });
+  };
+
   const handleAccountAction = (path: string) => {
     navigate(path);
   };
@@ -244,14 +276,19 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
         <Menu className="w-5 h-5" />
       </button>
 
-      <div className="flex-1 max-w-sm hidden sm:block">
+      <form
+        onSubmit={handleSearchSubmit}
+        className="flex-1 max-w-sm hidden sm:block"
+      >
         <Input
           icon={<Search className="w-4 h-4" />}
           type="text"
+          value={searchQuery}
+          onChange={(event) => setSearchQuery(event.target.value)}
           placeholder="Search audits, findings…"
           className="rounded-full bg-slate-50 border-transparent py-2 focus:bg-white"
         />
-      </div>
+      </form>
 
       <div className="flex-1" />
 
@@ -274,7 +311,9 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
       >
         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200">
           <div>
-            <p className="text-sm font-semibold text-slate-800">Notifications</p>
+            <p className="text-sm font-semibold text-slate-800">
+              Notifications
+            </p>
             <p className="text-[11px] text-slate-500">{unreadCount} unread</p>
           </div>
           <div className="flex items-center gap-2">
@@ -334,7 +373,9 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                       <p className="mt-1 text-xs text-slate-600 leading-5">
                         {item.message}
                       </p>
-                      <p className="mt-1 text-[10px] text-slate-400">{item.time}</p>
+                      <p className="mt-1 text-[10px] text-slate-400">
+                        {item.time}
+                      </p>
                     </div>
                   </div>
                 </DropdownMenuItem>
@@ -403,9 +444,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
               <p className="text-sm font-medium text-slate-700">
                 {action.label}
               </p>
-              <p className="text-[11px] text-slate-500">
-                {action.description}
-              </p>
+              <p className="text-[11px] text-slate-500">{action.description}</p>
             </DropdownMenuItem>
           ))}
 
