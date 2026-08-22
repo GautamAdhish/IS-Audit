@@ -1,6 +1,9 @@
 import React, { useMemo, useRef, useState } from "react";
 import { FileDown, Loader2, Users, ShieldAlert } from "lucide-react";
 import PageHeader from "../components/common/PageHeader";
+import Tabs from "../components/common/Tabs";
+import LoadingState from "../components/common/LoadingState";
+import Alert from "../components/common/Alert";
 import { useAuth } from "../context/AuthContext";
 import { useSummaryData } from "./summary/useSummaryData";
 import { computeInsights, toNarrativePayload } from "./summary/computeInsights";
@@ -110,40 +113,39 @@ export default function SummaryPage() {
       />
 
       {/* Report type toggle */}
-      <div className="inline-flex rounded-lg border border-ink-900/10 bg-white p-1 mb-6">
-        <button
-          onClick={() => setReportType("general")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${
-            reportType === "general"
-              ? "bg-brass-500 text-ink-950"
-              : "text-slate-500 hover:text-ink-900"
-          }`}
-        >
-          <Users className="w-4 h-4" />
-          General Report
-          <span className="text-[10px] font-normal opacity-75">(Board)</span>
-        </button>
-        <button
-          onClick={() => setReportType("technical")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${
-            reportType === "technical"
-              ? "bg-brass-500 text-ink-950"
-              : "text-slate-500 hover:text-ink-900"
-          }`}
-        >
-          <ShieldAlert className="w-4 h-4" />
-          Technical Report
-          <span className="text-[10px] font-normal opacity-75">(Auditors)</span>
-        </button>
-      </div>
+      <Tabs
+        className="mb-6"
+        value={reportType}
+        onValueChange={(v) => setReportType(v as ReportType)}
+        items={[
+          {
+            value: "general",
+            icon: <Users className="w-4 h-4" />,
+            label: (
+              <>
+                General Report{" "}
+                <span className="text-[10px] font-normal opacity-75">(Board)</span>
+              </>
+            ),
+          },
+          {
+            value: "technical",
+            icon: <ShieldAlert className="w-4 h-4" />,
+            label: (
+              <>
+                Technical Report{" "}
+                <span className="text-[10px] font-normal opacity-75">(Auditors)</span>
+              </>
+            ),
+          },
+        ]}
+      />
 
       {data.loading ? (
-        <div className="py-24 text-center text-sm text-slate-400">
-          Loading audit data…
-        </div>
+        <LoadingState message="Loading audit data…" />
       ) : data.error ? (
-        <div className="py-24 text-center text-sm text-red-500">
-          {data.error}
+        <div className="py-12">
+          <Alert variant="error">{data.error}</Alert>
         </div>
       ) : (
         // This is exactly what gets captured for the PDF — nothing outside

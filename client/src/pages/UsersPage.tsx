@@ -1,3 +1,4 @@
+import { Users } from "lucide-react";
 import ResourcePage from "../components/common/ResourcePage";
 export default function UsersPage() {
   return (
@@ -5,6 +6,7 @@ export default function UsersPage() {
       title="Users"
       subtitle="Manage auditors, auditees and system access"
       resource="users"
+      icon={Users}
       searchKeys={["code", "name", "email", "department"]}
       filters={[
         {

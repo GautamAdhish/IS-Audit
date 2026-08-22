@@ -1,3 +1,4 @@
+import { Target } from "lucide-react";
 import ResourcePage from "../components/common/ResourcePage";
 export default function CapaPage() {
   return (
@@ -5,6 +6,7 @@ export default function CapaPage() {
       title="CAPA"
       subtitle="Corrective and Preventive Actions"
       resource="capas"
+      icon={Target}
       searchKeys={["code", "title", "owner"]}
       filters={[
         {

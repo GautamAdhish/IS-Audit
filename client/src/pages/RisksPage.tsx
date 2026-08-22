@@ -1,3 +1,4 @@
+import { ShieldAlert } from "lucide-react";
 import ResourcePage from "../components/common/ResourcePage";
 export default function RisksPage() {
   return (
@@ -5,6 +6,7 @@ export default function RisksPage() {
       title="Risk Register"
       subtitle="Identify, assess and treat information-security risks"
       resource="risks"
+      icon={ShieldAlert}
       searchKeys={["code", "title", "category", "owner"]}
       filters={[
         {

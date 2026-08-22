@@ -1,3 +1,4 @@
+import { CheckSquare } from "lucide-react";
 import ResourcePage from "../components/common/ResourcePage";
 export default function ChecklistPage() {
   return (
@@ -5,6 +6,7 @@ export default function ChecklistPage() {
       title="ISO 27001 Checklist"
       subtitle="Clause-by-clause compliance assessment"
       resource="checklist"
+      icon={CheckSquare}
       searchKeys={["code", "clause", "title", "description"]}
       filters={[
         {

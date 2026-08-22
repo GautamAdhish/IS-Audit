@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Shield, Lock, Mail, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import Input from "../components/common/Input";
+import Alert from "../components/common/Alert";
 
 export default function LoginPage() {
   const { user, login } = useAuth();
@@ -48,34 +50,34 @@ export default function LoginPage() {
             Use your organisation account to continue.
           </p>
           {error && (
-            <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">
-              {error}
+            <div className="mb-4">
+              <Alert variant="error">{error}</Alert>
             </div>
           )}
           <label className="block text-xs font-medium text-slate-600 mb-1">
             Email
           </label>
-          <div className="relative mb-4">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
+          <div className="mb-4">
+            <Input
+              icon={<Mail className="w-4 h-4" />}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               type="email"
               required
-              className="w-full pl-9 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm"
+              className="py-2.5"
             />
           </div>
           <label className="block text-xs font-medium text-slate-600 mb-1">
             Password
           </label>
           <div className="relative mb-5">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
+            <Input
+              icon={<Lock className="w-4 h-4" />}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               type={showPassword ? "text" : "password"}
               required
-              className="w-full pl-9 pr-10 py-2.5 border border-slate-300 rounded-lg text-sm"
+              className="py-2.5 pr-10"
             />
             <button
               type="button"

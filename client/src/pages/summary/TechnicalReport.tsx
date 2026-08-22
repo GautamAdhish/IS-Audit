@@ -5,8 +5,10 @@ import {
   ScatterChart, Scatter, ZAxis,
 } from "recharts";
 import Card, { CardHeader, CardBody } from "../../components/common/Card";
+import StatTile from "../../components/common/StatTile";
 import VulnerabilityMap from "./VulnerabilityMap";
 import type { Insights } from "./computeInsights";
+import { CHART_COLORS, chartAxisTick, chartGridProps, complianceColor } from "../../lib/chartTheme";
 
 const TechnicalReport: React.FC<{ insights: Insights }> = ({ insights }) => {
   const {
@@ -21,22 +23,10 @@ const TechnicalReport: React.FC<{ insights: Insights }> = ({ insights }) => {
       <Card data-pdf-section className="print:break-inside-avoid">
         <CardHeader title="Headline Metrics" subtitle="Point-in-time snapshot across every tracked control area" />
         <CardBody className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div>
-            <p className="text-[11px] text-slate-500 uppercase tracking-wide">Overall Exposure Index</p>
-            <p className="text-2xl font-bold text-ink-900">{overallExposure}%</p>
-          </div>
-          <div>
-            <p className="text-[11px] text-slate-500 uppercase tracking-wide">Avg. Compliance</p>
-            <p className="text-2xl font-bold text-ink-900">{insights.avgCompliance}%</p>
-          </div>
-          <div>
-            <p className="text-[11px] text-slate-500 uppercase tracking-wide">Critical/High Risks Open</p>
-            <p className="text-2xl font-bold text-red-600">{criticalOpenRisks.length}</p>
-          </div>
-          <div>
-            <p className="text-[11px] text-slate-500 uppercase tracking-wide">Overdue CAPAs</p>
-            <p className="text-2xl font-bold text-amber-600">{overdueCapas.length}</p>
-          </div>
+          <StatTile variant="plain" tone="blue" label="Overall Exposure Index" value={`${overallExposure}%`} />
+          <StatTile variant="plain" tone="blue" label="Avg. Compliance" value={`${insights.avgCompliance}%`} />
+          <StatTile variant="plain" tone="red" label="Critical/High Risks Open" value={criticalOpenRisks.length} />
+          <StatTile variant="plain" tone="amber" label="Overdue CAPAs" value={overdueCapas.length} />
         </CardBody>
       </Card>
 
@@ -82,9 +72,9 @@ const TechnicalReport: React.FC<{ insights: Insights }> = ({ insights }) => {
           <CardBody>
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={risksByLevel} layout="vertical" margin={{ left: 16 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis type="number" tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} />
-                <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} width={70} />
+                <CartesianGrid {...chartGridProps} />
+                <XAxis type="number" tick={chartAxisTick} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="name" tick={chartAxisTick} axisLine={false} tickLine={false} width={70} />
                 <Tooltip />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]} maxBarSize={22}>
                   {risksByLevel.map((e, i) => <Cell key={i} fill={e.color} />)}
@@ -100,12 +90,12 @@ const TechnicalReport: React.FC<{ insights: Insights }> = ({ insights }) => {
           <CardBody>
             <ResponsiveContainer width="100%" height={240}>
               <ScatterChart margin={{ top: 8, right: 16, bottom: 8, left: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis type="number" dataKey="likelihood" name="Likelihood" domain={[0, 6]} tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} />
-                <YAxis type="number" dataKey="impact" name="Impact" domain={[0, 6]} tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} />
+                <CartesianGrid {...chartGridProps} />
+                <XAxis type="number" dataKey="likelihood" name="Likelihood" domain={[0, 6]} tick={chartAxisTick} axisLine={false} tickLine={false} />
+                <YAxis type="number" dataKey="impact" name="Impact" domain={[0, 6]} tick={chartAxisTick} axisLine={false} tickLine={false} />
                 <ZAxis type="number" dataKey="z" range={[80, 400]} />
                 <Tooltip cursor={{ strokeDasharray: "3 3" }} formatter={(v: number, n: string) => [v, n]} />
-                <Scatter data={riskMatrix} fill="#dc2626" fillOpacity={0.6} />
+                <Scatter data={riskMatrix} fill={CHART_COLORS.badStrong} fillOpacity={0.6} />
               </ScatterChart>
             </ResponsiveContainer>
           </CardBody>
@@ -116,13 +106,13 @@ const TechnicalReport: React.FC<{ insights: Insights }> = ({ insights }) => {
           <CardBody>
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={capaByStatus} margin={{ top: 16, right: 8, left: -16, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} />
+                <CartesianGrid {...chartGridProps} />
+                <XAxis dataKey="name" tick={chartAxisTick} axisLine={false} tickLine={false} />
+                <YAxis tick={chartAxisTick} axisLine={false} tickLine={false} />
                 <Tooltip />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={40}>
                   {capaByStatus.map((e, i) => <Cell key={i} fill={e.color} />)}
-                  <LabelList dataKey="value" position="top" style={{ fontSize: 10, fill: "#64748b" }} />
+                  <LabelList dataKey="value" position="top" style={{ fontSize: 10, fill: CHART_COLORS.neutral }} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -134,15 +124,15 @@ const TechnicalReport: React.FC<{ insights: Insights }> = ({ insights }) => {
           <CardBody>
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={complianceByDept} margin={{ top: 16, right: 8, left: -16, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="department" tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} />
-                <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} tickFormatter={(v) => `${v}%`} />
+                <CartesianGrid {...chartGridProps} />
+                <XAxis dataKey="department" tick={chartAxisTick} axisLine={false} tickLine={false} />
+                <YAxis domain={[0, 100]} tick={chartAxisTick} axisLine={false} tickLine={false} tickFormatter={(v) => `${v}%`} />
                 <Tooltip formatter={(v: number) => [`${v}%`, "Compliance"]} />
                 <Bar dataKey="compliance" radius={[4, 4, 0, 0]} maxBarSize={40}>
                   {complianceByDept.map((e, i) => (
-                    <Cell key={i} fill={e.compliance >= 85 ? "#4caf37" : e.compliance >= 70 ? "#f59e0b" : "#ef4444"} />
+                    <Cell key={i} fill={complianceColor(e.compliance)} />
                   ))}
-                  <LabelList dataKey="compliance" position="top" formatter={(v: number) => `${v}%`} style={{ fontSize: 10, fill: "#64748b" }} />
+                  <LabelList dataKey="compliance" position="top" formatter={(v: number) => `${v}%`} style={{ fontSize: 10, fill: CHART_COLORS.neutral }} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -200,7 +190,7 @@ const TechnicalReport: React.FC<{ insights: Insights }> = ({ insights }) => {
                           className="h-full rounded-full"
                           style={{
                             width: `${a.exposurePct}%`,
-                            background: a.exposurePct >= 50 ? "#dc2626" : a.exposurePct >= 25 ? "#f59e0b" : "#4caf37",
+                            background: a.exposurePct >= 50 ? CHART_COLORS.badStrong : a.exposurePct >= 25 ? CHART_COLORS.warn : CHART_COLORS.good,
                           }}
                         />
                       </div>

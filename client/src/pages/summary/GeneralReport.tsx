@@ -6,6 +6,7 @@ import {
 import Card, { CardHeader, CardBody } from "../../components/common/Card";
 import Figurine from "./Figurine";
 import type { Insights } from "./computeInsights";
+import { CHART_COLORS, chartAxisTick, chartGridProps, complianceColor } from "../../lib/chartTheme";
 import {
   ShieldCheck, ShieldAlert, ClipboardCheck, Target,
   Image, Building2, TrendingUp,
@@ -45,12 +46,12 @@ const GeneralReport: React.FC<{ insights: Insights }> = ({ insights }) => {
               <svg viewBox="0 0 36 36" className="w-32 h-32 -rotate-90">
                 <path
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  fill="none" stroke="#f1f5f9" strokeWidth="3.5"
+                  fill="none" stroke={CHART_COLORS.grid} strokeWidth="3.5"
                 />
                 <path
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                   fill="none"
-                  stroke={overallExposure >= 60 ? "#dc2626" : overallExposure >= 35 ? "#f59e0b" : "#4caf37"}
+                  stroke={overallExposure >= 60 ? CHART_COLORS.badStrong : overallExposure >= 35 ? CHART_COLORS.warn : CHART_COLORS.good}
                   strokeWidth="3.5"
                   strokeDasharray={`${100 - overallExposure}, 100`}
                   strokeLinecap="round"
@@ -108,15 +109,15 @@ const GeneralReport: React.FC<{ insights: Insights }> = ({ insights }) => {
           <CardBody>
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={complianceByDept} margin={{ top: 16, right: 8, left: -16, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="department" tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} />
-                <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} tickFormatter={(v) => `${v}%`} />
+                <CartesianGrid {...chartGridProps} />
+                <XAxis dataKey="department" tick={chartAxisTick} axisLine={false} tickLine={false} />
+                <YAxis domain={[0, 100]} tick={chartAxisTick} axisLine={false} tickLine={false} tickFormatter={(v) => `${v}%`} />
                 <Tooltip formatter={(v: number) => [`${v}%`, "Compliance"]} />
                 <Bar dataKey="compliance" radius={[4, 4, 0, 0]} maxBarSize={48}>
                   {complianceByDept.map((entry, i) => (
-                    <Cell key={i} fill={entry.compliance >= 85 ? "#4caf37" : entry.compliance >= 70 ? "#f59e0b" : "#ef4444"} />
+                    <Cell key={i} fill={complianceColor(entry.compliance)} />
                   ))}
-                  <LabelList dataKey="compliance" position="top" formatter={(v: number) => `${v}%`} style={{ fontSize: 10, fill: "#64748b", fontWeight: 600 }} />
+                  <LabelList dataKey="compliance" position="top" formatter={(v: number) => `${v}%`} style={{ fontSize: 10, fill: CHART_COLORS.neutral, fontWeight: 600 }} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>

@@ -1,3 +1,4 @@
+import { Building2 } from "lucide-react";
 import ResourcePage from "../components/common/ResourcePage";
 
 export default function VendorManagementAssessmentPage() {
@@ -6,6 +7,7 @@ export default function VendorManagementAssessmentPage() {
       title="Vendor Management"
       subtitle="Vendor profiles, risk posture, and approval status — saved directly to the database"
       resource="vendors"
+      icon={Building2}
       searchKeys={[
         "vendorName",
         "serviceDescription",

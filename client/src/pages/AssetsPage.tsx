@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Download, Eye, X } from "lucide-react";
+import { Download, Eye, Image } from "lucide-react";
 import ResourcePage from "../components/common/ResourcePage";
+import Modal from "../components/common/Modal";
 import { api } from "../lib/api";
 
 export default function AssetsPage() {
@@ -44,6 +45,7 @@ export default function AssetsPage() {
         title="Assets"
         subtitle="Asset inventory and assessment records with photo evidence"
         resource="assets"
+        icon={Image}
         searchKeys={[
           "code",
           "assetName",
@@ -159,35 +161,23 @@ export default function AssetsPage() {
         }
       />
 
-      {preview && (
-        <div className="fixed inset-0 z-[60] bg-black/70 flex items-center justify-center p-4">
-          <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
-              <div>
-                <h2 className="font-semibold text-slate-900">Photo Preview</h2>
-                <p className="text-xs text-slate-500 mt-0.5 truncate">
-                  {preview.name}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setPreview(null)}
-                className="p-2 text-slate-400 hover:text-slate-700 rounded-full"
-                aria-label="Close preview"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="bg-slate-950 flex items-center justify-center p-4 sm:p-6">
-              <img
-                src={preview.url}
-                alt={preview.name}
-                className="max-h-[75vh] w-auto max-w-full rounded-lg object-contain bg-white shadow-xl"
-              />
-            </div>
+      <Modal
+        open={Boolean(preview)}
+        onOpenChange={(open) => !open && setPreview(null)}
+        title="Photo Preview"
+        description={preview?.name}
+        size="lg"
+      >
+        {preview && (
+          <div className="-m-5 bg-slate-950 flex items-center justify-center p-4 sm:p-6">
+            <img
+              src={preview.url}
+              alt={preview.name}
+              className="max-h-[70vh] w-auto max-w-full rounded-lg object-contain bg-white shadow-xl"
+            />
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </>
   );
 }

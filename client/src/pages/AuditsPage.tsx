@@ -1,3 +1,4 @@
+import { ClipboardList } from "lucide-react";
 import ResourcePage from "../components/common/ResourcePage";
 export default function AuditsPage() {
   return (
@@ -5,6 +6,7 @@ export default function AuditsPage() {
       title="Audits"
       subtitle="Plan, execute and monitor information-security audits"
       resource="audits"
+      icon={ClipboardList}
       searchKeys={["code", "title", "department", "auditor"]}
       filters={[
         {

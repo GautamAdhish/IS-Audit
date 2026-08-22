@@ -1,25 +1,85 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  ClipboardList, Loader, CheckCircle, AlertCircle, AlertTriangle,
+  XCircle, MinusCircle, Eye, Clock, TrendingUp, ShieldAlert, FileText,
+  Plus, Users2, type LucideIcon,
+} from "lucide-react";
 import { api } from "../lib/api";
-import StatCard from "../components/dashboard/StatCard";
+import { useAuth } from "../context/AuthContext";
+import ComplianceHeroCard from "../components/dashboard/ComplianceHeroCard";
 import ComplianceChart from "../components/dashboard/ComplianceChart";
 import NcTrendChart from "../components/dashboard/NcTrendChart";
-import PageHeader from "../components/common/PageHeader";
+import Card, { CardHeader, CardBody } from "../components/common/Card";
 import Badge from "../components/common/Badge";
+import Button from "../components/common/Button";
+import StatTile from "../components/common/StatTile";
+import IconChip from "../components/common/IconChip";
+import AvatarStack from "../components/common/AvatarStack";
+import DataTable, { type DataTableColumn } from "../components/common/DataTable";
+import LoadingState from "../components/common/LoadingState";
+import Alert from "../components/common/Alert";
+
+const iconMap: Record<string, LucideIcon> = {
+  ClipboardList, Loader, CheckCircle, AlertCircle, AlertTriangle,
+  XCircle, MinusCircle, Eye, Clock, TrendingUp, ShieldAlert, FileText,
+};
+
+type StatCard = { label: string; value: number | string; color: string; icon: string };
+
+type Audit = {
+  _id: string;
+  code: string;
+  title: string;
+  department: string;
+  auditor?: { name: string };
+  status: string;
+  compliance?: number;
+};
+
+const statusChipTone = (status: string): "green" | "red" | "amber" | "neutral" =>
+  status === "Completed" ? "green" : status === "Overdue" ? "red" : status === "In Progress" ? "amber" : "neutral";
+
+const columns: DataTableColumn<Audit>[] = [
+  {
+    key: "title",
+    label: "Audit",
+    render: (a) => (
+      <div className="flex items-center gap-3">
+        <IconChip icon={ClipboardList} tone={statusChipTone(a.status)} />
+        <div className="min-w-0">
+          <p className="font-medium text-ink-900 truncate">{a.title}</p>
+          <p className="text-xs text-slate-400 font-mono">{a.code}</p>
+        </div>
+      </div>
+    ),
+  },
+  { key: "department", label: "Department" },
+  { key: "auditor", label: "Auditor", render: (a) => a.auditor?.name || "—" },
+  { key: "status", label: "Status", render: (a) => <Badge label={a.status} /> },
+  {
+    key: "compliance",
+    label: "Compliance",
+    align: "right",
+    render: (a) => (a.compliance ? `${a.compliance}%` : "—"),
+  },
+];
 
 export default function DashboardPage() {
-  const [data, setData] = useState<any>({
-    statCards: [],
-    complianceByDepartment: [],
-    ncTrend: [],
-  });
-  const [audits, setAudits] = useState<any[]>([]);
+  const { user } = useAuth();
+  const [data, setData] = useState<{
+    statCards: StatCard[];
+    complianceByDepartment: any[];
+    ncTrend: any[];
+  }>({ statCards: [], complianceByDepartment: [], ncTrend: [] });
+  const [audits, setAudits] = useState<Audit[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   useEffect(() => {
     Promise.all([
       api.get("/dashboard/overview"),
-      api.get("/audits?limit=5&sort=-createdAt"),
+      api.get("/audits?limit=6&sort=-createdAt"),
     ])
       .then(([a, b]) => {
         setData(a.data);
@@ -28,74 +88,110 @@ export default function DashboardPage() {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, []);
-  if (loading)
-    return <div className="p-8 text-sm text-slate-500">Loading dashboard…</div>;
+
+  if (loading) return <LoadingState message="Loading dashboard…" />;
+
+  const complianceCard = data.statCards.find((c) => c.label === "Compliance");
+  const complianceValue = complianceCard ? parseInt(String(complianceCard.value), 10) || 0 : 0;
+  const otherStats = data.statCards.filter((c) => c.label !== "Compliance");
+  const auditorNames = audits.map((a) => a.auditor?.name).filter(Boolean) as string[];
+
   return (
     <div>
-      <PageHeader
-        title="Dashboard"
-        subtitle="Live overview from the IS Audit database"
-      />
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-[28px] font-bold text-ink-900 tracking-tight leading-tight">
+            Welcome back, <span className="text-slate-400">{user?.name?.split(" ")[0] || "there"}</span>
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Live overview from the IS Audit database
+          </p>
+        </div>
+        <Link to="/audits">
+          <Button icon={<Plus className="w-4 h-4" />}>New Audit</Button>
+        </Link>
+      </div>
+
       {error && (
-        <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
-          {error}
+        <div className="mb-4">
+          <Alert variant="error">{error}</Alert>
         </div>
       )}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 mb-6">
-        {data.statCards.map((c: any) => (
-          <StatCard key={c.label} {...c} />
-        ))}
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-        <ComplianceChart data={data.complianceByDepartment} />
-        <NcTrendChart data={data.ncTrend} />
-      </div>
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
-          <h3 className="text-sm font-semibold text-slate-800">
-            Recent Audits
-          </h3>
-          <Link to="/audits" className="text-xs text-ink-700 hover:underline">
-            View all
-          </Link>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-4">
+        <div className="lg:col-span-3">
+          <ComplianceHeroCard value={complianceValue} />
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-xs text-slate-500 bg-slate-50 border-b border-slate-200">
-                <th className="px-4 py-3 font-medium">ID</th>
-                <th className="px-4 py-3 font-medium">Title</th>
-                <th className="px-4 py-3 font-medium">Department</th>
-                <th className="px-4 py-3 font-medium">Auditor</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Compliance</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {audits.map((a) => (
-                <tr key={a._id} className="hover:bg-slate-50">
-                  <td className="px-4 py-3 font-mono text-xs text-slate-600">
-                    {a.code}
-                  </td>
-                  <td className="px-4 py-3 font-medium text-slate-600">
-                    {a.title}
-                  </td>
-                  <td className="px-4 py-3 text-slate-600">{a.department}</td>
-                  <td className="px-4 py-3 text-slate-600">
-                    {a.auditor?.name || "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge label={a.status} />
-                  </td>
-                  <td className="px-4 py-3 text-slate-600">
-                    {a.compliance ? `${a.compliance}%` : "—"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="lg:col-span-5">
+          <ComplianceChart data={data.complianceByDepartment} />
+        </div>
+        <div className="lg:col-span-4">
+          <NcTrendChart
+            data={data.ncTrend}
+            footer={
+              <div className="flex gap-2">
+                <Link to="/findings" className="flex-1">
+                  <Button variant="primary" size="sm" className="w-full justify-center">
+                    View Findings
+                  </Button>
+                </Link>
+                <Link to="/capa" className="flex-1">
+                  <Button variant="secondary" size="sm" className="w-full justify-center">
+                    View CAPA
+                  </Button>
+                </Link>
+              </div>
+            }
+          />
         </div>
       </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-4">
+        <div className="lg:col-span-9 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 content-start">
+          {otherStats.map((c) => (
+            <StatTile
+              key={c.label}
+              variant="card"
+              label={c.label}
+              value={c.value}
+              tone={c.color as any}
+              icon={iconMap[c.icon] ?? ClipboardList}
+            />
+          ))}
+        </div>
+        <div className="lg:col-span-3">
+          <Card className="h-full">
+            <CardHeader title="Assigned Auditors" subtitle="Across recent audits" />
+            <CardBody className="pt-0">
+              {auditorNames.length ? (
+                <>
+                  <AvatarStack names={auditorNames} max={5} />
+                  <p className="text-xs text-slate-400 mt-4 flex items-center gap-1.5">
+                    <Users2 className="w-3.5 h-3.5" />
+                    {new Set(auditorNames).size} auditor{new Set(auditorNames).size === 1 ? "" : "s"} on recent audits
+                  </p>
+                </>
+              ) : (
+                <p className="text-xs text-slate-400">No auditors assigned yet.</p>
+              )}
+            </CardBody>
+          </Card>
+        </div>
+      </div>
+
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-slate-800">Recent Audits</h3>
+        <Link to="/audits" className="text-xs font-medium text-ink-700 hover:text-ink-900">
+          View all →
+        </Link>
+      </div>
+      <DataTable
+        columns={columns}
+        rows={audits}
+        rowKey={(row) => row._id}
+        emptyTitle="No audits yet"
+        emptyDescription="Recently created audits will show up here."
+      />
     </div>
   );
 }

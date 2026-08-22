@@ -1,3 +1,4 @@
+import { AlertTriangle } from "lucide-react";
 import ResourcePage from "../components/common/ResourcePage";
 export default function FindingsPage() {
   return (
@@ -5,6 +6,7 @@ export default function FindingsPage() {
       title="Findings"
       subtitle="Track nonconformities, observations and remediation deadlines"
       resource="findings"
+      icon={AlertTriangle}
       searchKeys={["code", "title", "department", "assignee"]}
       filters={[
         {

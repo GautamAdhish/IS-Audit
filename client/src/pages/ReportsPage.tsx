@@ -1,4 +1,4 @@
-import { Download } from "lucide-react";
+import { Download, BarChart2 } from "lucide-react";
 import ResourcePage from "../components/common/ResourcePage";
 import { api } from "../lib/api";
 
@@ -8,6 +8,7 @@ export default function ReportsPage() {
       title="Reports"
       subtitle="Generated audit and compliance reports"
       resource="reports"
+      icon={BarChart2}
       searchKeys={["code", "title", "period", "generatedBy"]}
       filters={[
         {
