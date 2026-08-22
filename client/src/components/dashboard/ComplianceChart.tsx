@@ -118,7 +118,7 @@ const ComplianceChart: React.FC<{ data?: any[] }> = ({ data = [] }) => {
         <ResponsiveContainer width="100%" height={230}>
           <BarChart
             data={data}
-            margin={{ top: 12, right: 8, left: -16, bottom: 0 }}
+            margin={{ top: 60, right: 8, left: -16, bottom: 0 }}
           >
             <CartesianGrid {...chartGridProps} vertical={false} />
             <XAxis
