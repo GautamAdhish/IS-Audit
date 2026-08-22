@@ -40,7 +40,7 @@ const Button: React.FC<ButtonProps> = ({
 }) => (
   <button
     type={type}
-    className={`inline-flex items-center gap-2 rounded-md font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-brass-500 focus-visible:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:translate-y-0 ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+    className={`inline-flex items-center gap-2 rounded-full font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-brass-500 focus-visible:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:translate-y-0 ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
     {...rest}
   >
     {icon && <span className="shrink-0">{icon}</span>}

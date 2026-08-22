@@ -13,7 +13,7 @@ interface CardHeaderProps {
 const Card: React.FC<CardProps> = ({ children, className = "", ...props }) => (
   <div
     {...props}
-    className={`bg-white rounded-lg border border-ink-900/10 shadow-[0_1px_2px_rgba(16,26,46,0.04)] ${className}`}
+    className={`bg-white rounded-3xl shadow-[0_1px_3px_rgba(16,26,46,0.06),0_1px_2px_rgba(16,26,46,0.04)] ${className}`}
   >
     {children}
   </div>
@@ -24,9 +24,9 @@ export const CardHeader: React.FC<CardHeaderProps> = ({
   subtitle,
   action,
 }) => (
-  <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-ink-900/8">
+  <div className="flex items-start justify-between gap-4 px-6 py-5">
     <div>
-      <h3 className="text-[13px] font-semibold text-ink-900 tracking-tight">
+      <h3 className="text-sm font-semibold text-ink-900 tracking-tight">
         {title}
       </h3>
 
@@ -42,7 +42,7 @@ export const CardBody: React.FC<CardProps> = ({
   className = "",
   ...props
 }) => (
-  <div {...props} className={`p-5 ${className}`}>
+  <div {...props} className={`p-6 ${className}`}>
     {children}
   </div>
 );

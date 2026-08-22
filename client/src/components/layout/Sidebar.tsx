@@ -1,6 +1,8 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { NavLink, useMatch } from "react-router-dom";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import { useAuth } from "../../context/AuthContext";
+import { cn } from "../../utils/cn";
 import {
   LayoutDashboard,
   BookOpen,
@@ -21,6 +23,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 
+const COLLAPSE_STORAGE_KEY = "is_audit_sidebar_collapsed";
+
 const navItems = [
   { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
   { label: "Audit Program", path: "/audit-program", icon: BookOpen },
@@ -38,37 +42,100 @@ const navItems = [
   { label: "Settings", path: "/settings", icon: Settings },
 ];
 
-interface SidebarProps {
+const NavItem: React.FC<{
+  label: string;
+  path: string;
+  icon: React.ElementType;
   collapsed: boolean;
-  onToggle: () => void;
-}
+}> = ({ label, path, icon: Icon, collapsed }) => {
+  // Resolved to a plain string rather than NavLink's function-form
+  // className — Radix's asChild/Slot merges child props assuming plain
+  // values, and stringifies a function prop instead of calling it.
+  const isActive = Boolean(useMatch(path));
 
-const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
-  const { user } = useAuth();
+  const link = (
+    <NavLink
+      to={path}
+      className={cn(
+        "flex items-center gap-3 rounded-md px-3 py-2.5 text-[13px] font-medium transition-colors duration-150",
+        collapsed &&
+          "lg:justify-center lg:w-11 lg:h-11 lg:mx-auto lg:rounded-md lg:px-0 lg:py-0",
+        isActive
+          ? cn(
+              "bg-white/8 text-brass-400",
+              collapsed && "lg:bg-brass-500 lg:text-ink-950",
+            )
+          : "text-slate-400 hover:bg-white/5 hover:text-white",
+      )}
+    >
+      <Icon className="w-4 h-4 shrink-0" />
+      <span className={cn("truncate", collapsed && "lg:hidden")}>{label}</span>
+    </NavLink>
+  );
 
   return (
-    <aside
-      className={`
-      h-full bg-ink-950 flex flex-col transition-all duration-300
-      w-[85vw] max-w-[18rem] lg:w-auto
-      ${collapsed ? "lg:w-16" : "lg:w-60"}
-    `}
-    >
-      {/* Profile header — circular green avatar like the reference dashboard */}
-      <div
-        className={`flex flex-col items-center text-center px-4 pt-7 pb-6 border-b border-white/8 shrink-0 ${collapsed ? "px-2 pt-4 pb-4" : ""}`}
+    <Tooltip.Root delayDuration={200}>
+      <Tooltip.Trigger asChild>{link}</Tooltip.Trigger>
+      <Tooltip.Portal>
+        <Tooltip.Content
+          side="right"
+          sideOffset={12}
+          className={cn(
+            "hidden z-40 rounded-md bg-ink-900 px-2.5 py-1.5 text-xs font-medium text-white shadow-lg",
+            collapsed && "lg:block",
+          )}
+        >
+          {label}
+        </Tooltip.Content>
+      </Tooltip.Portal>
+    </Tooltip.Root>
+  );
+};
+
+// Desktop rail toggles between icon-only (14 sections is too many for the
+// reference's horizontal pill nav, so icon+tooltip is the honest adaptation
+// of a literal clone) and a labeled, full-width rail — the user's choice,
+// remembered across sessions. Mobile ignores the collapsed state and always
+// renders the labeled drawer, better suited to touch than hover tooltips.
+// Tooltips are portalled (Radix) rather than CSS-positioned, since the
+// nav's own overflow-y-auto would otherwise clip anything escaping its
+// right edge.
+const Sidebar: React.FC = () => {
+  const { user } = useAuth();
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem(COLLAPSE_STORAGE_KEY) !== "false";
+    } catch {
+      return true;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(COLLAPSE_STORAGE_KEY, String(collapsed));
+    } catch {
+      // ignore — persistence is a nicety, not a requirement
+    }
+  }, [collapsed]);
+
+  return (
+    <Tooltip.Provider>
+      <aside
+        className={cn(
+          "h-full w-[78vw] max-w-[17rem] bg-ink-950 rounded-lg flex flex-col shrink-0 lg:transition-[width] lg:duration-300 lg:ease-in-out",
+          collapsed ? "lg:w-20" : "lg:w-64",
+        )}
       >
         <div
-          className={`rounded-full bg-brass-500 flex items-center justify-center shrink-0 ${collapsed ? "w-9 h-9" : "w-20 h-20"}`}
+          className={cn(
+            "flex flex-col items-center text-center px-4 pt-6 pb-5 shrink-0 lg:pt-5 lg:pb-4",
+            collapsed ? "lg:px-2" : "lg:px-4",
+          )}
         >
-          <User
-            className={
-              collapsed ? "w-4 h-4 text-white" : "w-10 h-10 text-white"
-            }
-          />
-        </div>
-        {!collapsed && (
-          <div className="min-w-0 mt-3">
+          <div className="w-11 h-11 lg:w-10 lg:h-10 rounded-md bg-brass-500 flex items-center justify-center shrink-0">
+            <User className="w-5 h-5 text-ink-950" />
+          </div>
+          <div className={cn("min-w-0 mt-2.5", collapsed && "lg:hidden")}>
             <p className="text-sm font-bold text-white leading-tight truncate tracking-tight uppercase">
               {user?.name || "IS Audit"}
             </p>
@@ -76,56 +143,63 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
               {user?.role || "Management System"}
             </p>
           </div>
-        )}
-      </div>
+        </div>
 
-      {/* Nav */}
-      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
-        {navItems.map(({ label, path, icon: Icon }) => (
-          <NavLink
-            key={path}
-            to={path}
-            title={collapsed ? label : undefined}
-            className={({ isActive }) =>
-              `relative flex items-center gap-3 px-3 py-2.5 rounded-md text-[13px] font-medium transition-colors duration-150
-            ${
-              isActive
-                ? "bg-white/8 text-brass-400"
-                : "text-slate-400 hover:bg-white/5 hover:text-white"
-            }
-            ${collapsed ? "justify-center" : ""}`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                {isActive && (
-                  <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-full bg-brass-400" />
-                )}
-                <Icon
-                  className={`w-4 h-4 shrink-0 ${isActive ? "text-brass-400" : ""}`}
-                />
-                {!collapsed && <span className="truncate">{label}</span>}
-              </>
-            )}
-          </NavLink>
-        ))}
-      </nav>
-
-      {/* Collapse toggle */}
-      <div className="border-t border-white/8 p-2 shrink-0">
-        <button
-          onClick={onToggle}
-          className="w-full flex items-center justify-center p-2 rounded-md text-slate-400 hover:bg-white/5 hover:text-white transition-colors"
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          {collapsed ? (
-            <ChevronRight className="w-4 h-4" />
-          ) : (
-            <ChevronLeft className="w-4 h-4" />
+        <nav
+          className={cn(
+            "flex-1 overflow-y-auto py-2 px-2.5 space-y-1 lg:space-y-1.5",
+            collapsed ? "lg:px-2" : "lg:px-2.5",
           )}
-        </button>
-      </div>
-    </aside>
+        >
+          {navItems.map((item) => (
+            <NavItem key={item.path} {...item} collapsed={collapsed} />
+          ))}
+        </nav>
+
+        <div
+          className={cn(
+            "hidden lg:block shrink-0 border-t border-white/5 py-2.5",
+            collapsed ? "lg:px-2" : "lg:px-2.5",
+          )}
+        >
+          <Tooltip.Root delayDuration={200}>
+            <Tooltip.Trigger asChild>
+              <button
+                type="button"
+                onClick={() => setCollapsed((value) => !value)}
+                aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                className={cn(
+                  "flex items-center gap-3 rounded-md px-3 py-2.5 text-[13px] font-medium text-slate-400 transition-colors duration-150 hover:bg-white/5 hover:text-white",
+                  collapsed &&
+                    "lg:justify-center lg:w-11 lg:h-11 lg:mx-auto lg:rounded-md lg:px-0 lg:py-0",
+                )}
+              >
+                {collapsed ? (
+                  <ChevronRight className="w-4 h-4 shrink-0" />
+                ) : (
+                  <ChevronLeft className="w-4 h-4 shrink-0" />
+                )}
+                <span className={cn("truncate", collapsed && "lg:hidden")}>
+                  Collapse
+                </span>
+              </button>
+            </Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content
+                side="right"
+                sideOffset={12}
+                className={cn(
+                  "hidden z-40 rounded-md bg-ink-900 px-2.5 py-1.5 text-xs font-medium text-white shadow-lg",
+                  collapsed && "lg:block",
+                )}
+              >
+                Expand sidebar
+              </Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        </div>
+      </aside>
+    </Tooltip.Provider>
   );
 };
 
