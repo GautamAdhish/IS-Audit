@@ -30,13 +30,16 @@ import errorHandler from './middleware/errorHandler.js';
 const app = express();
 
 // --- Security & platform middleware -----------------------------------
-app.use(helmet()); // sensible security headers (CSP, HSTS, X-Frame-Options, etc.)
 app.use(
-  cors({
-    origin: process.env.CLIENT_ORIGIN?.split(',') || 'http://localhost:5173',
-    credentials: true,
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        'img-src': ["'self'", 'data:', 'blob:'],
+      },
+    },
   })
-);
+); // sensible security headers (CSP, HSTS, X-Frame-Options, etc.)
 
 // Rate limiting: protects the API (and login endpoint in particular)
 // from brute-force and abuse. Generous for normal SPA usage.

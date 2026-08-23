@@ -1,0 +1,11 @@
+**/node_modules
+**/dist
+**/.env
+**/.git
+**/*.log
+server/uploads/*
+!server/uploads/.gitkeep
+.dockerignore
+Dockerfile
+docker-compose.yml
+README.md
