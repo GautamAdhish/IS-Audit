@@ -3,10 +3,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  base: '/is-audit/',
-  build: {
-    outDir: '../dist',  // output to project root/dist, not client/dist
-  },
+  base: process.env.VERCEL ? '/' : '/is-audit/',
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
