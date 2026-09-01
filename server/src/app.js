@@ -41,6 +41,13 @@ app.use(
   })
 ); // sensible security headers (CSP, HSTS, X-Frame-Options, etc.)
 
+app.use(
+  cors({
+    origin: process.env.CLIENT_ORIGIN,
+    credentials: true,
+  })
+);
+
 // Rate limiting: protects the API (and login endpoint in particular)
 // from brute-force and abuse. Generous for normal SPA usage.
 const apiLimiter = rateLimit({
